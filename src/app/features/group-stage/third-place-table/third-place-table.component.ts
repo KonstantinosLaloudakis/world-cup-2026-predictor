@@ -24,15 +24,15 @@ import { Team } from '../../../core/models/team.interface';
         <table class="w-full text-sm text-left table-fixed">
           <thead class="text-[10px] uppercase bg-indigo-950/60 text-indigo-300 tracking-wider">
             <tr>
-              <th scope="col" class="px-3 sm:px-4 py-3 font-bold w-10">Pos</th>
-              <th scope="col" class="px-1 sm:px-2 py-3 font-bold w-9">Grp</th>
+              <th scope="col" class="pl-2 pr-0 sm:px-4 py-3 font-bold w-7 sm:w-10">Pos</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold w-7 sm:w-9">Grp</th>
               <th scope="col" class="px-1 sm:px-2 py-3 font-bold">Team</th>
-              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center w-8">P</th>
-              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center w-8">W</th>
+              <th scope="col" class="px-0 sm:px-2 py-3 font-bold text-center w-6 sm:w-8">P</th>
+              <th scope="col" class="px-0 sm:px-2 py-3 font-bold text-center w-6 sm:w-8">W</th>
               <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center hidden sm:table-cell w-8">D</th>
               <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center hidden sm:table-cell w-8">L</th>
-              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center w-9">GD</th>
-              <th scope="col" class="px-2 sm:px-4 py-3 font-black text-center text-indigo-400 w-10">Pts</th>
+              <th scope="col" class="px-0 sm:px-2 py-3 font-bold text-center w-7 sm:w-9">GD</th>
+              <th scope="col" class="px-0 sm:px-4 py-3 font-black text-center text-indigo-400 w-8 sm:w-10">Pts</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-indigo-900/30">
@@ -51,7 +51,7 @@ import { Team } from '../../../core/models/team.interface';
                   'opacity-50': i >= 8,
                   'opacity-30 italic': item.standing.played === 0 && i < 8
                 }">
-              <td class="px-3 sm:px-4 py-3.5 font-mono font-medium text-indigo-300 text-xs relative w-10">
+              <td class="pl-2 pr-0 sm:px-4 py-3.5 font-mono font-medium text-indigo-300 text-xs relative w-7 sm:w-10">
                 <div class="absolute left-0 top-0 bottom-0 w-1 rounded-r-sm"
                      [ngClass]="{'bg-cyan-400': i < 8, 'bg-rose-500': i >= 8}">
                 </div>
@@ -63,7 +63,7 @@ import { Team } from '../../../core/models/team.interface';
                 <div class="flex items-center gap-2.5 w-full">
                   <img *ngIf="teamMap.get(item.standing.teamId)?.flagUrl" [src]="teamMap.get(item.standing.teamId)?.flagUrl" alt="Flag" class="w-5 h-3.5 object-cover rounded-[2px] shadow-sm ring-1 ring-indigo-900/50 shrink-0">
                   <div *ngIf="!teamMap.get(item.standing.teamId)?.flagUrl" class="w-5 h-3.5 bg-indigo-950 rounded-[2px] shadow-sm shrink-0"></div>
-                  <span class="text-slate-100 group-hover:text-white transition-colors text-[13px] sm:text-sm font-bold flex-1 min-w-0 truncate max-w-[120px] xl:max-w-[200px]" [title]="teamMap.get(item.standing.teamId)?.name || item.standing.teamId">
+                  <span class="text-slate-100 group-hover:text-white transition-colors text-[13px] sm:text-sm font-bold flex-1 min-w-0 truncate" [title]="teamMap.get(item.standing.teamId)?.name || item.standing.teamId">
                     {{ teamMap.get(item.standing.teamId)?.name || item.standing.teamId }}
                   </span>
                 </div>
@@ -75,7 +75,7 @@ import { Team } from '../../../core/models/team.interface';
               <td class="px-1 sm:px-2 py-3.5 text-center font-medium" [ngClass]="{'text-emerald-400': item.standing.goalDifference > 0, 'text-rose-400': item.standing.goalDifference < 0, 'text-indigo-300': item.standing.goalDifference === 0}">
                 {{ item.standing.goalDifference > 0 ? '+' : '' }}{{ item.standing.goalDifference }}
               </td>
-              <td class="px-3 sm:px-4 py-3.5 text-center font-black text-lg text-slate-100 group-hover:text-cyan-300 transition-colors">{{ item.standing.points }}</td>
+              <td class="px-0 sm:px-4 py-3.5 text-center font-black text-lg text-slate-100 group-hover:text-cyan-300 transition-colors">{{ item.standing.points }}</td>
             </tr>
             </ng-container>
           </tbody>
