@@ -30,7 +30,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npx ng build --base-href /world-cup-predictor/
+      - run: npx ng build --base-href /world-cup-2026-predictor/
 
       - uses: actions/configure-pages@v5
 
