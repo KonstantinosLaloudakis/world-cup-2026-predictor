@@ -42,7 +42,7 @@ import { TournamentService } from '../../../core/services/tournament.service';
         </div>
 
         <div class="space-y-6 pb-6">
-          <div *ngFor="let group of groupedMatches()" [id]="'group-' + group.groupId">
+          <div *ngFor="let group of groupedMatches(); trackBy: trackByGroupId" [id]="'group-' + group.groupId">
           <div class="space-y-3">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1 border-l-2 border-indigo-500 relative">
               <span class="bg-slate-900/40 px-2 py-0.5 rounded text-indigo-300">Group {{ group.groupId }}</span>
@@ -195,6 +195,10 @@ export class MatchListComponent {
     if (el && container) {
       container.scrollTo({ top: el.offsetTop - 50, behavior: 'smooth' });
     }
+  }
+
+  trackByGroupId(index: number, group: { groupId: string }): string {
+    return group.groupId;
   }
 
   trackByMatchId(index: number, match: Match): number {
