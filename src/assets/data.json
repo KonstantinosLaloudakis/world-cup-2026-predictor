@@ -1,0 +1,1382 @@
+{
+  "teams": [
+    {
+      "id": "HAI",
+      "name": "Haiti",
+      "group": "C",
+      "flagUrl": "https://flagcdn.com/ht.svg",
+      "powerRating": 68
+    },
+    {
+      "id": "BEL",
+      "name": "Belgium",
+      "group": "G",
+      "flagUrl": "https://flagcdn.com/be.svg",
+      "powerRating": 88
+    },
+    {
+      "id": "CRO",
+      "name": "Croatia",
+      "group": "L",
+      "flagUrl": "https://flagcdn.com/hr.svg",
+      "powerRating": 87
+    },
+    {
+      "id": "ARG",
+      "name": "Argentina",
+      "group": "J",
+      "flagUrl": "https://flagcdn.com/ar.svg",
+      "powerRating": 95
+    },
+    {
+      "id": "POR",
+      "name": "Portugal",
+      "group": "K",
+      "flagUrl": "https://flagcdn.com/pt.svg",
+      "powerRating": 91
+    },
+    {
+      "id": "GHA",
+      "name": "Ghana",
+      "group": "L",
+      "flagUrl": "https://flagcdn.com/gh.svg",
+      "powerRating": 76
+    },
+    {
+      "id": "MEX",
+      "name": "Mexico",
+      "group": "A",
+      "flagUrl": "https://flagcdn.com/mx.svg",
+      "powerRating": 84
+    },
+    {
+      "id": "SCO",
+      "name": "Scotland",
+      "group": "C",
+      "flagUrl": "https://flagcdn.com/gb-sct.svg",
+      "powerRating": 78
+    },
+    {
+      "id": "IRN",
+      "name": "Iran",
+      "group": "G",
+      "flagUrl": "https://flagcdn.com/ir.svg",
+      "powerRating": 77
+    },
+    {
+      "id": "COD",
+      "name": "DR Congo",
+      "group": "K",
+      "flagUrl": "https://flagcdn.com/cd.svg",
+      "powerRating": 72
+    },
+    {
+      "id": "ZAF",
+      "name": "South Africa",
+      "group": "A",
+      "flagUrl": "https://flagcdn.com/za.svg",
+      "powerRating": 74
+    },
+    {
+      "id": "URU",
+      "name": "Uruguay",
+      "group": "H",
+      "flagUrl": "https://flagcdn.com/uy.svg",
+      "powerRating": 86
+    },
+    {
+      "id": "CUR",
+      "name": "Cura\u00e7ao",
+      "group": "E",
+      "flagUrl": "https://flagcdn.com/cw.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "BRA",
+      "name": "Brazil",
+      "group": "C",
+      "flagUrl": "https://flagcdn.com/br.svg",
+      "powerRating": 93
+    },
+    {
+      "id": "NET",
+      "name": "Netherlands",
+      "group": "F",
+      "flagUrl": "https://flagcdn.com/nl.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "BIH",
+      "name": "Bosnia & Herzegovina",
+      "group": "B",
+      "flagUrl": "https://flagcdn.com/ba.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "FRA",
+      "name": "France",
+      "group": "I",
+      "flagUrl": "https://flagcdn.com/fr.svg",
+      "powerRating": 94
+    },
+    {
+      "id": "CPV",
+      "name": "Cape Verde",
+      "group": "H",
+      "flagUrl": "https://flagcdn.com/cv.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "COL",
+      "name": "Colombia",
+      "group": "K",
+      "flagUrl": "https://flagcdn.com/co.svg",
+      "powerRating": 85
+    },
+    {
+      "id": "TUN",
+      "name": "Tunisia",
+      "group": "F",
+      "flagUrl": "https://flagcdn.com/tn.svg",
+      "powerRating": 74
+    },
+    {
+      "id": "QAT",
+      "name": "Qatar",
+      "group": "B",
+      "flagUrl": "https://flagcdn.com/qa.svg",
+      "powerRating": 72
+    },
+    {
+      "id": "JOR",
+      "name": "Jordan",
+      "group": "J",
+      "flagUrl": "https://flagcdn.com/jo.svg",
+      "powerRating": 69
+    },
+    {
+      "id": "GER",
+      "name": "Germany",
+      "group": "E",
+      "flagUrl": "https://flagcdn.com/de.svg",
+      "powerRating": 88
+    },
+    {
+      "id": "TUR",
+      "name": "Turkey",
+      "group": "D",
+      "flagUrl": "https://flagcdn.com/tr.svg",
+      "powerRating": 79
+    },
+    {
+      "id": "KOR",
+      "name": "South Korea",
+      "group": "A",
+      "flagUrl": "https://flagcdn.com/kr.svg",
+      "powerRating": 80
+    },
+    {
+      "id": "AUS",
+      "name": "Australia",
+      "group": "D",
+      "flagUrl": "https://flagcdn.com/au.svg",
+      "powerRating": 77
+    },
+    {
+      "id": "ALG",
+      "name": "Algeria",
+      "group": "J",
+      "flagUrl": "https://flagcdn.com/dz.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "MOR",
+      "name": "Morocco",
+      "group": "C",
+      "flagUrl": "https://flagcdn.com/ma.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "NOR",
+      "name": "Norway",
+      "group": "I",
+      "flagUrl": "https://flagcdn.com/no.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "AUT",
+      "name": "Austria",
+      "group": "J",
+      "flagUrl": "https://flagcdn.com/at.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "SEN",
+      "name": "Senegal",
+      "group": "I",
+      "flagUrl": "https://flagcdn.com/sn.svg",
+      "powerRating": 82
+    },
+    {
+      "id": "IRQ",
+      "name": "Iraq",
+      "group": "I",
+      "flagUrl": "https://flagcdn.com/iq.svg",
+      "powerRating": 71
+    },
+    {
+      "id": "SWI",
+      "name": "Switzerland",
+      "group": "B",
+      "flagUrl": "https://flagcdn.com/ch.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "KSA",
+      "name": "Saudi Arabia",
+      "group": "H",
+      "flagUrl": "https://flagcdn.com/sa.svg",
+      "powerRating": 73
+    },
+    {
+      "id": "SPA",
+      "name": "Spain",
+      "group": "H",
+      "flagUrl": "https://flagcdn.com/es.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "ENG",
+      "name": "England",
+      "group": "L",
+      "flagUrl": "https://flagcdn.com/gb-eng.svg",
+      "powerRating": 92
+    },
+    {
+      "id": "JPN",
+      "name": "Japan",
+      "group": "F",
+      "flagUrl": "https://flagcdn.com/jp.svg",
+      "powerRating": 81
+    },
+    {
+      "id": "CAN",
+      "name": "Canada",
+      "group": "B",
+      "flagUrl": "https://flagcdn.com/ca.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "PAR",
+      "name": "Paraguay",
+      "group": "D",
+      "flagUrl": "https://flagcdn.com/py.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "USA",
+      "name": "USA",
+      "group": "D",
+      "flagUrl": "https://flagcdn.com/us.svg",
+      "powerRating": 84
+    },
+    {
+      "id": "SWE",
+      "name": "Sweden",
+      "group": "F",
+      "flagUrl": "https://flagcdn.com/se.svg",
+      "powerRating": 78
+    },
+    {
+      "id": "PAN",
+      "name": "Panama",
+      "group": "L",
+      "flagUrl": "https://flagcdn.com/pa.svg",
+      "powerRating": 73
+    },
+    {
+      "id": "UZB",
+      "name": "Uzbekistan",
+      "group": "K",
+      "flagUrl": "https://flagcdn.com/uz.svg",
+      "powerRating": 71
+    },
+    {
+      "id": "NZL",
+      "name": "New Zealand",
+      "group": "G",
+      "flagUrl": "https://flagcdn.com/nz.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "CZE",
+      "name": "Czech Republic",
+      "group": "A",
+      "flagUrl": "https://flagcdn.com/cz.svg",
+      "powerRating": 77
+    },
+    {
+      "id": "IVO",
+      "name": "Ivory Coast",
+      "group": "E",
+      "flagUrl": "https://flagcdn.com/ci.svg",
+      "powerRating": 75
+    },
+    {
+      "id": "ECU",
+      "name": "Ecuador",
+      "group": "E",
+      "flagUrl": "https://flagcdn.com/ec.svg",
+      "powerRating": 76
+    },
+    {
+      "id": "EGY",
+      "name": "Egypt",
+      "group": "G",
+      "flagUrl": "https://flagcdn.com/eg.svg",
+      "powerRating": 73
+    }
+  ],
+  "matches": [
+    {
+      "id": 1,
+      "stage": "group",
+      "groupId": "A",
+      "homeTeamId": "MEX",
+      "awayTeamId": "ZAF",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-11"
+    },
+    {
+      "id": 2,
+      "stage": "group",
+      "groupId": "A",
+      "homeTeamId": "KOR",
+      "awayTeamId": "CZE",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-11"
+    },
+    {
+      "id": 3,
+      "stage": "group",
+      "groupId": "A",
+      "homeTeamId": "CZE",
+      "awayTeamId": "ZAF",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-18"
+    },
+    {
+      "id": 4,
+      "stage": "group",
+      "groupId": "A",
+      "homeTeamId": "MEX",
+      "awayTeamId": "KOR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-18"
+    },
+    {
+      "id": 5,
+      "stage": "group",
+      "groupId": "A",
+      "homeTeamId": "CZE",
+      "awayTeamId": "MEX",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-24"
+    },
+    {
+      "id": 6,
+      "stage": "group",
+      "groupId": "A",
+      "homeTeamId": "ZAF",
+      "awayTeamId": "KOR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-24"
+    },
+    {
+      "id": 7,
+      "stage": "group",
+      "groupId": "B",
+      "homeTeamId": "CAN",
+      "awayTeamId": "BIH",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-12"
+    },
+    {
+      "id": 8,
+      "stage": "group",
+      "groupId": "B",
+      "homeTeamId": "QAT",
+      "awayTeamId": "SWI",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-13"
+    },
+    {
+      "id": 9,
+      "stage": "group",
+      "groupId": "B",
+      "homeTeamId": "SWI",
+      "awayTeamId": "BIH",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-18"
+    },
+    {
+      "id": 10,
+      "stage": "group",
+      "groupId": "B",
+      "homeTeamId": "CAN",
+      "awayTeamId": "QAT",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-18"
+    },
+    {
+      "id": 11,
+      "stage": "group",
+      "groupId": "B",
+      "homeTeamId": "SWI",
+      "awayTeamId": "CAN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-24"
+    },
+    {
+      "id": 12,
+      "stage": "group",
+      "groupId": "B",
+      "homeTeamId": "BIH",
+      "awayTeamId": "QAT",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-24"
+    },
+    {
+      "id": 13,
+      "stage": "group",
+      "groupId": "C",
+      "homeTeamId": "BRA",
+      "awayTeamId": "MOR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-13"
+    },
+    {
+      "id": 14,
+      "stage": "group",
+      "groupId": "C",
+      "homeTeamId": "HAI",
+      "awayTeamId": "SCO",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-13"
+    },
+    {
+      "id": 15,
+      "stage": "group",
+      "groupId": "C",
+      "homeTeamId": "SCO",
+      "awayTeamId": "MOR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-19"
+    },
+    {
+      "id": 16,
+      "stage": "group",
+      "groupId": "C",
+      "homeTeamId": "BRA",
+      "awayTeamId": "HAI",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-19"
+    },
+    {
+      "id": 17,
+      "stage": "group",
+      "groupId": "C",
+      "homeTeamId": "SCO",
+      "awayTeamId": "BRA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-24"
+    },
+    {
+      "id": 18,
+      "stage": "group",
+      "groupId": "C",
+      "homeTeamId": "MOR",
+      "awayTeamId": "HAI",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-24"
+    },
+    {
+      "id": 19,
+      "stage": "group",
+      "groupId": "D",
+      "homeTeamId": "USA",
+      "awayTeamId": "PAR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-12"
+    },
+    {
+      "id": 20,
+      "stage": "group",
+      "groupId": "D",
+      "homeTeamId": "AUS",
+      "awayTeamId": "TUR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-13"
+    },
+    {
+      "id": 21,
+      "stage": "group",
+      "groupId": "D",
+      "homeTeamId": "USA",
+      "awayTeamId": "AUS",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-19"
+    },
+    {
+      "id": 22,
+      "stage": "group",
+      "groupId": "D",
+      "homeTeamId": "TUR",
+      "awayTeamId": "PAR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-19"
+    },
+    {
+      "id": 23,
+      "stage": "group",
+      "groupId": "D",
+      "homeTeamId": "TUR",
+      "awayTeamId": "USA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-25"
+    },
+    {
+      "id": 24,
+      "stage": "group",
+      "groupId": "D",
+      "homeTeamId": "PAR",
+      "awayTeamId": "AUS",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-25"
+    },
+    {
+      "id": 25,
+      "stage": "group",
+      "groupId": "E",
+      "homeTeamId": "GER",
+      "awayTeamId": "CUR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-14"
+    },
+    {
+      "id": 26,
+      "stage": "group",
+      "groupId": "E",
+      "homeTeamId": "IVO",
+      "awayTeamId": "ECU",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-14"
+    },
+    {
+      "id": 27,
+      "stage": "group",
+      "groupId": "E",
+      "homeTeamId": "GER",
+      "awayTeamId": "IVO",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-20"
+    },
+    {
+      "id": 28,
+      "stage": "group",
+      "groupId": "E",
+      "homeTeamId": "ECU",
+      "awayTeamId": "CUR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-20"
+    },
+    {
+      "id": 29,
+      "stage": "group",
+      "groupId": "E",
+      "homeTeamId": "CUR",
+      "awayTeamId": "IVO",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-25"
+    },
+    {
+      "id": 30,
+      "stage": "group",
+      "groupId": "E",
+      "homeTeamId": "ECU",
+      "awayTeamId": "GER",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-25"
+    },
+    {
+      "id": 31,
+      "stage": "group",
+      "groupId": "F",
+      "homeTeamId": "NET",
+      "awayTeamId": "JPN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-14"
+    },
+    {
+      "id": 32,
+      "stage": "group",
+      "groupId": "F",
+      "homeTeamId": "SWE",
+      "awayTeamId": "TUN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-14"
+    },
+    {
+      "id": 33,
+      "stage": "group",
+      "groupId": "F",
+      "homeTeamId": "NET",
+      "awayTeamId": "SWE",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-20"
+    },
+    {
+      "id": 34,
+      "stage": "group",
+      "groupId": "F",
+      "homeTeamId": "TUN",
+      "awayTeamId": "JPN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-20"
+    },
+    {
+      "id": 35,
+      "stage": "group",
+      "groupId": "F",
+      "homeTeamId": "JPN",
+      "awayTeamId": "SWE",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-25"
+    },
+    {
+      "id": 36,
+      "stage": "group",
+      "groupId": "F",
+      "homeTeamId": "TUN",
+      "awayTeamId": "NET",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-25"
+    },
+    {
+      "id": 37,
+      "stage": "group",
+      "groupId": "G",
+      "homeTeamId": "BEL",
+      "awayTeamId": "EGY",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-15"
+    },
+    {
+      "id": 38,
+      "stage": "group",
+      "groupId": "G",
+      "homeTeamId": "IRN",
+      "awayTeamId": "NZL",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-15"
+    },
+    {
+      "id": 39,
+      "stage": "group",
+      "groupId": "G",
+      "homeTeamId": "BEL",
+      "awayTeamId": "IRN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-21"
+    },
+    {
+      "id": 40,
+      "stage": "group",
+      "groupId": "G",
+      "homeTeamId": "NZL",
+      "awayTeamId": "EGY",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-21"
+    },
+    {
+      "id": 41,
+      "stage": "group",
+      "groupId": "G",
+      "homeTeamId": "EGY",
+      "awayTeamId": "IRN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-26"
+    },
+    {
+      "id": 42,
+      "stage": "group",
+      "groupId": "G",
+      "homeTeamId": "NZL",
+      "awayTeamId": "BEL",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-26"
+    },
+    {
+      "id": 43,
+      "stage": "group",
+      "groupId": "H",
+      "homeTeamId": "SPA",
+      "awayTeamId": "CPV",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-15"
+    },
+    {
+      "id": 44,
+      "stage": "group",
+      "groupId": "H",
+      "homeTeamId": "KSA",
+      "awayTeamId": "URU",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-15"
+    },
+    {
+      "id": 45,
+      "stage": "group",
+      "groupId": "H",
+      "homeTeamId": "SPA",
+      "awayTeamId": "KSA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-21"
+    },
+    {
+      "id": 46,
+      "stage": "group",
+      "groupId": "H",
+      "homeTeamId": "URU",
+      "awayTeamId": "CPV",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-21"
+    },
+    {
+      "id": 47,
+      "stage": "group",
+      "groupId": "H",
+      "homeTeamId": "CPV",
+      "awayTeamId": "KSA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-26"
+    },
+    {
+      "id": 48,
+      "stage": "group",
+      "groupId": "H",
+      "homeTeamId": "URU",
+      "awayTeamId": "SPA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-26"
+    },
+    {
+      "id": 49,
+      "stage": "group",
+      "groupId": "I",
+      "homeTeamId": "FRA",
+      "awayTeamId": "SEN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-16"
+    },
+    {
+      "id": 50,
+      "stage": "group",
+      "groupId": "I",
+      "homeTeamId": "IRQ",
+      "awayTeamId": "NOR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-16"
+    },
+    {
+      "id": 51,
+      "stage": "group",
+      "groupId": "I",
+      "homeTeamId": "FRA",
+      "awayTeamId": "IRQ",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-22"
+    },
+    {
+      "id": 52,
+      "stage": "group",
+      "groupId": "I",
+      "homeTeamId": "NOR",
+      "awayTeamId": "SEN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-22"
+    },
+    {
+      "id": 53,
+      "stage": "group",
+      "groupId": "I",
+      "homeTeamId": "NOR",
+      "awayTeamId": "FRA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-26"
+    },
+    {
+      "id": 54,
+      "stage": "group",
+      "groupId": "I",
+      "homeTeamId": "SEN",
+      "awayTeamId": "IRQ",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-26"
+    },
+    {
+      "id": 55,
+      "stage": "group",
+      "groupId": "J",
+      "homeTeamId": "ARG",
+      "awayTeamId": "ALG",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-16"
+    },
+    {
+      "id": 56,
+      "stage": "group",
+      "groupId": "J",
+      "homeTeamId": "AUT",
+      "awayTeamId": "JOR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-16"
+    },
+    {
+      "id": 57,
+      "stage": "group",
+      "groupId": "J",
+      "homeTeamId": "ARG",
+      "awayTeamId": "AUT",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-22"
+    },
+    {
+      "id": 58,
+      "stage": "group",
+      "groupId": "J",
+      "homeTeamId": "JOR",
+      "awayTeamId": "ALG",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-22"
+    },
+    {
+      "id": 59,
+      "stage": "group",
+      "groupId": "J",
+      "homeTeamId": "ALG",
+      "awayTeamId": "AUT",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-27"
+    },
+    {
+      "id": 60,
+      "stage": "group",
+      "groupId": "J",
+      "homeTeamId": "JOR",
+      "awayTeamId": "ARG",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-27"
+    },
+    {
+      "id": 61,
+      "stage": "group",
+      "groupId": "K",
+      "homeTeamId": "POR",
+      "awayTeamId": "COD",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-17"
+    },
+    {
+      "id": 62,
+      "stage": "group",
+      "groupId": "K",
+      "homeTeamId": "UZB",
+      "awayTeamId": "COL",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-17"
+    },
+    {
+      "id": 63,
+      "stage": "group",
+      "groupId": "K",
+      "homeTeamId": "POR",
+      "awayTeamId": "UZB",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-23"
+    },
+    {
+      "id": 64,
+      "stage": "group",
+      "groupId": "K",
+      "homeTeamId": "COL",
+      "awayTeamId": "COD",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-23"
+    },
+    {
+      "id": 65,
+      "stage": "group",
+      "groupId": "K",
+      "homeTeamId": "COL",
+      "awayTeamId": "POR",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-27"
+    },
+    {
+      "id": 66,
+      "stage": "group",
+      "groupId": "K",
+      "homeTeamId": "COD",
+      "awayTeamId": "UZB",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-27"
+    },
+    {
+      "id": 67,
+      "stage": "group",
+      "groupId": "L",
+      "homeTeamId": "ENG",
+      "awayTeamId": "CRO",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-17"
+    },
+    {
+      "id": 68,
+      "stage": "group",
+      "groupId": "L",
+      "homeTeamId": "GHA",
+      "awayTeamId": "PAN",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-17"
+    },
+    {
+      "id": 69,
+      "stage": "group",
+      "groupId": "L",
+      "homeTeamId": "ENG",
+      "awayTeamId": "GHA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-23"
+    },
+    {
+      "id": 70,
+      "stage": "group",
+      "groupId": "L",
+      "homeTeamId": "PAN",
+      "awayTeamId": "CRO",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-23"
+    },
+    {
+      "id": 71,
+      "stage": "group",
+      "groupId": "L",
+      "homeTeamId": "PAN",
+      "awayTeamId": "ENG",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-27"
+    },
+    {
+      "id": 72,
+      "stage": "group",
+      "groupId": "L",
+      "homeTeamId": "CRO",
+      "awayTeamId": "GHA",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-27"
+    },
+    {
+      "id": 73,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-28"
+    },
+    {
+      "id": 74,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-29"
+    },
+    {
+      "id": 75,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-29"
+    },
+    {
+      "id": 76,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-29"
+    },
+    {
+      "id": 77,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-30"
+    },
+    {
+      "id": 78,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-30"
+    },
+    {
+      "id": 79,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-06-30"
+    },
+    {
+      "id": 80,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-01"
+    },
+    {
+      "id": 81,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-01"
+    },
+    {
+      "id": 82,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-01"
+    },
+    {
+      "id": 83,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-02"
+    },
+    {
+      "id": 84,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-02"
+    },
+    {
+      "id": 85,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-02"
+    },
+    {
+      "id": 86,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-03"
+    },
+    {
+      "id": 87,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-03"
+    },
+    {
+      "id": 88,
+      "stage": "round_32",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-03"
+    },
+    {
+      "id": 89,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-04"
+    },
+    {
+      "id": 90,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-04"
+    },
+    {
+      "id": 91,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-05"
+    },
+    {
+      "id": 92,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-05"
+    },
+    {
+      "id": 93,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-06"
+    },
+    {
+      "id": 94,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-06"
+    },
+    {
+      "id": 95,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-07"
+    },
+    {
+      "id": 96,
+      "stage": "round_16",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-07"
+    },
+    {
+      "id": 97,
+      "stage": "quarter",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-09"
+    },
+    {
+      "id": 98,
+      "stage": "quarter",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-10"
+    },
+    {
+      "id": 99,
+      "stage": "quarter",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-11"
+    },
+    {
+      "id": 100,
+      "stage": "quarter",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-11"
+    },
+    {
+      "id": 101,
+      "stage": "semi",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-14"
+    },
+    {
+      "id": 102,
+      "stage": "semi",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-15"
+    },
+    {
+      "id": 103,
+      "stage": "final",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-18"
+    },
+    {
+      "id": 104,
+      "stage": "final",
+      "groupId": null,
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-07-19"
+    }
+  ]
+}
