@@ -21,18 +21,18 @@ import { Team } from '../../../core/models/team.interface';
       
       <!-- Table Body -->
       <div class="overflow-x-auto grow">
-        <table class="w-full text-sm text-left">
+        <table class="w-full text-sm text-left table-fixed">
           <thead class="text-[10px] uppercase bg-indigo-950/60 text-indigo-300 tracking-wider">
             <tr>
-              <th scope="col" class="px-3 sm:px-4 py-3 font-bold">Pos</th>
-              <th scope="col" class="px-2 py-3 font-bold">Grp</th>
-              <th scope="col" class="px-2 py-3 font-bold w-full">Team</th>
-              <th scope="col" class="px-2 py-3 font-bold text-center">P</th>
-              <th scope="col" class="px-2 py-3 font-bold text-center">W</th>
-              <th scope="col" class="px-2 py-3 font-bold text-center hidden sm:table-cell">D</th>
-              <th scope="col" class="px-2 py-3 font-bold text-center hidden sm:table-cell">L</th>
-              <th scope="col" class="px-2 py-3 font-bold text-center">GD</th>
-              <th scope="col" class="px-3 sm:px-4 py-3 font-black text-center text-indigo-400">Pts</th>
+              <th scope="col" class="px-3 sm:px-4 py-3 font-bold w-10">Pos</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold w-9">Grp</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold">Team</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center w-8">P</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center w-8">W</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center hidden sm:table-cell w-8">D</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center hidden sm:table-cell w-8">L</th>
+              <th scope="col" class="px-1 sm:px-2 py-3 font-bold text-center w-9">GD</th>
+              <th scope="col" class="px-2 sm:px-4 py-3 font-black text-center text-indigo-400 w-10">Pts</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-indigo-900/30">
@@ -58,8 +58,8 @@ import { Team } from '../../../core/models/team.interface';
                 {{ i + 1 }}
                 <span *ngIf="i === 7" class="absolute -right-1 top-1/2 -translate-y-1/2 text-[7px] font-black tracking-wider px-1.5 py-0.5 rounded-full bg-amber-500/25 text-amber-300 border border-amber-500/40 whitespace-nowrap">CUT</span>
               </td>
-              <td class="px-2 py-3.5 font-bold text-indigo-200">{{ item.group }}</td>
-              <td class="px-2 py-3.5 max-w-0 w-full">
+              <td class="px-1 sm:px-2 py-3.5 font-bold text-indigo-200">{{ item.group }}</td>
+              <td class="px-1 sm:px-2 py-3.5 max-w-0 w-full">
                 <div class="flex items-center gap-2.5 w-full">
                   <img *ngIf="teamMap.get(item.standing.teamId)?.flagUrl" [src]="teamMap.get(item.standing.teamId)?.flagUrl" alt="Flag" class="w-5 h-3.5 object-cover rounded-[2px] shadow-sm ring-1 ring-indigo-900/50 shrink-0">
                   <div *ngIf="!teamMap.get(item.standing.teamId)?.flagUrl" class="w-5 h-3.5 bg-indigo-950 rounded-[2px] shadow-sm shrink-0"></div>
@@ -68,11 +68,11 @@ import { Team } from '../../../core/models/team.interface';
                   </span>
                 </div>
               </td>
-              <td class="px-2 py-3.5 text-center text-indigo-200 font-medium">{{ item.standing.played }}</td>
-              <td class="px-2 py-3.5 text-center text-indigo-300">{{ item.standing.won }}</td>
-              <td class="px-2 py-3.5 text-center text-indigo-300 hidden sm:table-cell">{{ item.standing.drawn }}</td>
-              <td class="px-2 py-3.5 text-center text-indigo-300 hidden sm:table-cell">{{ item.standing.lost }}</td>
-              <td class="px-2 py-3.5 text-center font-medium" [ngClass]="{'text-emerald-400': item.standing.goalDifference > 0, 'text-rose-400': item.standing.goalDifference < 0, 'text-indigo-300': item.standing.goalDifference === 0}">
+              <td class="px-1 sm:px-2 py-3.5 text-center text-indigo-200 font-medium">{{ item.standing.played }}</td>
+              <td class="px-1 sm:px-2 py-3.5 text-center text-indigo-300">{{ item.standing.won }}</td>
+              <td class="px-1 sm:px-2 py-3.5 text-center text-indigo-300 hidden sm:table-cell">{{ item.standing.drawn }}</td>
+              <td class="px-1 sm:px-2 py-3.5 text-center text-indigo-300 hidden sm:table-cell">{{ item.standing.lost }}</td>
+              <td class="px-1 sm:px-2 py-3.5 text-center font-medium" [ngClass]="{'text-emerald-400': item.standing.goalDifference > 0, 'text-rose-400': item.standing.goalDifference < 0, 'text-indigo-300': item.standing.goalDifference === 0}">
                 {{ item.standing.goalDifference > 0 ? '+' : '' }}{{ item.standing.goalDifference }}
               </td>
               <td class="px-3 sm:px-4 py-3.5 text-center font-black text-lg text-slate-100 group-hover:text-cyan-300 transition-colors">{{ item.standing.points }}</td>

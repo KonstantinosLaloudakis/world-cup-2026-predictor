@@ -37,17 +37,91 @@ import { TournamentService } from '../../../core/services/tournament.service';
         Enter group stage scores above to populate the knockout bracket.
       </div>
 
-      <!-- Mobile scroll hint -->
-      <div class="flex items-center gap-2 text-xs text-slate-500 mb-3 sm:hidden">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-        <span class="font-medium">Swipe to explore the bracket</span>
+      <!-- ========== MOBILE VIEW: Round tabs + single round ========== -->
+      <div class="sm:hidden">
+        <!-- Round Tabs -->
+        <div class="flex gap-1.5 mb-4 overflow-x-auto pb-2">
+          <button *ngFor="let round of mobileRounds; let idx = index"
+                  (click)="mobileRound.set(idx)"
+                  class="shrink-0 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all border active:scale-95"
+                  [ngClass]="{
+                    'bg-indigo-500/30 border-indigo-500/50 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)]': mobileRound() === idx,
+                    'bg-slate-800/60 border-slate-700/50 text-slate-400': mobileRound() !== idx
+                  }">
+            {{ round }}
+          </button>
+        </div>
+
+        <!-- Active Round Content -->
+        <div class="flex flex-col gap-3">
+          <!-- R32 -->
+          <ng-container *ngIf="mobileRound() === 0">
+            <ng-container *ngFor="let match of r32(); trackBy: trackByMatchId">
+              <ng-container *ngTemplateOutlet="matchCard; context: { match: match }"></ng-container>
+            </ng-container>
+          </ng-container>
+          <!-- R16 -->
+          <ng-container *ngIf="mobileRound() === 1">
+            <ng-container *ngFor="let match of r16(); trackBy: trackByMatchId">
+              <ng-container *ngTemplateOutlet="matchCard; context: { match: match }"></ng-container>
+            </ng-container>
+          </ng-container>
+          <!-- QF -->
+          <ng-container *ngIf="mobileRound() === 2">
+            <ng-container *ngFor="let match of qf(); trackBy: trackByMatchId">
+              <ng-container *ngTemplateOutlet="matchCard; context: { match: match }"></ng-container>
+            </ng-container>
+          </ng-container>
+          <!-- SF -->
+          <ng-container *ngIf="mobileRound() === 3">
+            <ng-container *ngFor="let match of sf(); trackBy: trackByMatchId">
+              <ng-container *ngTemplateOutlet="matchCard; context: { match: match }"></ng-container>
+            </ng-container>
+          </ng-container>
+          <!-- Final -->
+          <ng-container *ngIf="mobileRound() === 4">
+            <ng-container *ngIf="finalMatch() as match">
+              <div class="bg-gradient-to-br from-amber-500/20 to-amber-900/20 border border-amber-500/50 rounded-2xl p-4 shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col gap-2 relative">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+                <div class="flex justify-between items-center z-10 p-3 rounded-lg cursor-pointer transition-all border border-transparent active:scale-[0.98]"
+                     (click)="selectWinner(match, match.homeTeamId)"
+                     [ngClass]="{ 'bg-amber-500/20 border-amber-500 shadow-inner scale-[1.02]': isWinner(match, match.homeTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId), 'hover:bg-amber-500/10': match.homeTeamId && !hasWinner(match) }">
+                  <div class="flex items-center gap-2">
+                    <img *ngIf="getTeam(match.homeTeamId)?.flagUrl" [src]="getTeam(match.homeTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
+                    <span class="font-black text-amber-300 text-base" [ngClass]="{'opacity-50': !match.homeTeamId}">{{ getTeam(match.homeTeamId)?.name || 'TBD' }}</span>
+                  </div>
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center bg-amber-950/50 border border-amber-500/30" [ngClass]="{'!bg-amber-500': isWinner(match, match.homeTeamId)}">
+                    <svg *ngIf="isWinner(match, match.homeTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                  </div>
+                </div>
+                <div class="h-px w-full bg-gradient-to-r from-transparent via-amber-500/50 to-transparent my-0.5 z-10"></div>
+                <div class="flex justify-between items-center z-10 p-3 rounded-lg cursor-pointer transition-all border border-transparent active:scale-[0.98]"
+                     (click)="selectWinner(match, match.awayTeamId)"
+                     [ngClass]="{ 'bg-amber-500/20 border-amber-500 shadow-inner scale-[1.02]': isWinner(match, match.awayTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId), 'hover:bg-amber-500/10': match.awayTeamId && !hasWinner(match) }">
+                  <div class="flex items-center gap-2">
+                    <img *ngIf="getTeam(match.awayTeamId)?.flagUrl" [src]="getTeam(match.awayTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
+                    <span class="font-black text-amber-300 text-base" [ngClass]="{'opacity-50': !match.awayTeamId}">{{ getTeam(match.awayTeamId)?.name || 'TBD' }}</span>
+                  </div>
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center bg-amber-950/50 border border-amber-500/30" [ngClass]="{'!bg-amber-500': isWinner(match, match.awayTeamId)}">
+                    <svg *ngIf="isWinner(match, match.awayTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!-- Third Place -->
+            <div class="mt-4">
+              <h3 class="text-center text-xs font-bold tracking-widest text-slate-500 uppercase mb-3">Third Place</h3>
+              <ng-container *ngIf="thirdPlaceMatch() as match">
+                <ng-container *ngTemplateOutlet="matchCard; context: { match: match }"></ng-container>
+              </ng-container>
+            </div>
+          </ng-container>
+        </div>
       </div>
 
-      <!-- Horizontal Scroll Container -->
-      <div class="overflow-x-auto custom-scrollbar pb-6 -webkit-overflow-scrolling-touch">
-        <div class="flex items-stretch min-w-max px-1 sm:px-4">
+      <!-- ========== DESKTOP VIEW: Horizontal scroll bracket ========== -->
+      <div class="hidden sm:block overflow-x-auto custom-scrollbar pb-6">
+        <div class="flex items-stretch min-w-max px-4">
 
           <!-- Column: Round of 32 -->
           <div class="flex flex-col w-64 shrink-0">
@@ -334,6 +408,8 @@ export class BracketComponent {
 
   private matchesSignal = signal<Match[]>([]);
   winners = this.tournamentService.knockoutWinners;
+  mobileRound = signal(0);
+  mobileRounds = ['R32', 'R16', 'QF', 'Semi', 'Final'];
 
   r32 = computed(() => this.matchesSignal().filter(m => m.stage === 'round_32'));
   r16 = computed(() => this.matchesSignal().filter(m => m.stage === 'round_16'));

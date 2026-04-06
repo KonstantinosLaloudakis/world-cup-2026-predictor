@@ -37,17 +37,17 @@ import { TournamentService } from '../../../core/services/tournament.service';
       
       <!-- Table Body -->
       <div class="overflow-hidden grow">
-        <table class="w-full text-sm text-left">
+        <table class="w-full text-sm text-left table-fixed">
           <thead class="text-[10px] uppercase bg-slate-900/40 text-slate-400 tracking-wider">
             <tr>
-              <th scope="col" class="pl-3 pr-0 py-2.5 font-bold w-7">Pos</th>
+              <th scope="col" class="pl-3 pr-0 py-2.5 font-bold w-8">Pos</th>
               <th scope="col" class="px-1 py-2.5 font-bold">Team</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-6">P</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-6">W</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-6 hidden sm:table-cell">D</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-6 hidden sm:table-cell">L</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-8">GD</th>
-              <th scope="col" class="pl-0.5 pr-2 py-2.5 font-black text-center text-cyan-400 w-8">Pts</th>
+              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7">P</th>
+              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7">W</th>
+              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7 hidden sm:table-cell">D</th>
+              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7 hidden sm:table-cell">L</th>
+              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-9">GD</th>
+              <th scope="col" class="pl-0.5 pr-2 py-2.5 font-black text-center text-cyan-400 w-9">Pts</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-700/30">
@@ -75,10 +75,10 @@ import { TournamentService } from '../../../core/services/tournament.service';
                     {{ teamMap.get(s.teamId)?.name || s.teamId }}
                   </span>
                   <!-- Qualification Badge -->
-                  <span *ngIf="i < 2" class="shrink-0 text-[8px] font-black tracking-wider px-1 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                  <span *ngIf="i < 2" class="shrink-0 text-[8px] font-black tracking-wider px-1 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hidden sm:inline">
                     Q
                   </span>
-                  <span *ngIf="i === 2" class="shrink-0 text-[8px] font-black tracking-wider px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  <span *ngIf="i === 2" class="shrink-0 text-[8px] font-black tracking-wider px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 hidden sm:inline">
                     3rd
                   </span>
                 </div>
