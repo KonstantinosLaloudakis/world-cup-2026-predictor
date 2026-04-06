@@ -411,10 +411,28 @@ export class BracketComponent {
   mobileRound = signal(0);
   mobileRounds = ['R32', 'R16', 'QF', 'Semi', 'Final'];
 
-  r32 = computed(() => this.matchesSignal().filter(m => m.stage === 'round_32'));
-  r16 = computed(() => this.matchesSignal().filter(m => m.stage === 'round_16'));
-  qf = computed(() => this.matchesSignal().filter(m => m.stage === 'quarter'));
-  sf = computed(() => this.matchesSignal().filter(m => m.stage === 'semi'));
+  // Visual bracket order (top-to-bottom) matching official FIFA bracket layout
+  private readonly R32_ORDER = [74, 77, 73, 75, 83, 84, 81, 82, 76, 78, 79, 80, 86, 88, 85, 87];
+  private readonly R16_ORDER = [89, 90, 93, 94, 91, 92, 95, 96];
+  private readonly QF_ORDER = [97, 98, 99, 100];
+  private readonly SF_ORDER = [101, 102];
+
+  r32 = computed(() => {
+    const matches = this.matchesSignal();
+    return this.R32_ORDER.map(id => matches.find(m => m.id === id)!).filter(Boolean);
+  });
+  r16 = computed(() => {
+    const matches = this.matchesSignal();
+    return this.R16_ORDER.map(id => matches.find(m => m.id === id)!).filter(Boolean);
+  });
+  qf = computed(() => {
+    const matches = this.matchesSignal();
+    return this.QF_ORDER.map(id => matches.find(m => m.id === id)!).filter(Boolean);
+  });
+  sf = computed(() => {
+    const matches = this.matchesSignal();
+    return this.SF_ORDER.map(id => matches.find(m => m.id === id)!).filter(Boolean);
+  });
   finalMatch = computed(() => this.matchesSignal().find(m => m.id === 104));
   thirdPlaceMatch = computed(() => this.matchesSignal().find(m => m.id === 103));
 
