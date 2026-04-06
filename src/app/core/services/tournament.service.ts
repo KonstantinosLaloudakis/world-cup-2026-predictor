@@ -2,6 +2,7 @@ import { Injectable, computed, signal, effect } from '@angular/core';
 import { Team } from '../models/team.interface';
 import { Match } from '../models/match.interface';
 import { GroupStanding } from '../models/standings.interface';
+import { THIRD_PLACE_TABLE } from '../data/third-place-table';
 import data from '../../../assets/data.json';
 
 @Injectable({
@@ -145,92 +146,129 @@ export class TournamentService {
     return thirds;
   });
 
+  // Official FIFA bracket flow: source match → {destination match, home/away slot}
+  private readonly BRACKET_FLOW: Record<number, {nextId: number, isHome: boolean}> = {
+    // R32 → R16 (non-adjacent pairs per FIFA)
+    73: {nextId: 90, isHome: true},   74: {nextId: 89, isHome: true},
+    75: {nextId: 90, isHome: false},  76: {nextId: 91, isHome: true},
+    77: {nextId: 89, isHome: false},  78: {nextId: 91, isHome: false},
+    79: {nextId: 92, isHome: true},   80: {nextId: 92, isHome: false},
+    81: {nextId: 94, isHome: true},   82: {nextId: 94, isHome: false},
+    83: {nextId: 93, isHome: true},   84: {nextId: 93, isHome: false},
+    85: {nextId: 96, isHome: true},   86: {nextId: 95, isHome: true},
+    87: {nextId: 96, isHome: false},  88: {nextId: 95, isHome: false},
+    // R16 → QF (also non-adjacent per FIFA)
+    89: {nextId: 97, isHome: true},   90: {nextId: 97, isHome: false},
+    91: {nextId: 99, isHome: true},   92: {nextId: 99, isHome: false},
+    93: {nextId: 98, isHome: true},   94: {nextId: 98, isHome: false},
+    95: {nextId: 100, isHome: true},  96: {nextId: 100, isHome: false},
+    // QF → SF
+    97: {nextId: 101, isHome: true},  98: {nextId: 101, isHome: false},
+    99: {nextId: 102, isHome: true},  100: {nextId: 102, isHome: false},
+    // SF → Final
+    101: {nextId: 104, isHome: true}, 102: {nextId: 104, isHome: false},
+  };
+
   public knockoutMatches = computed(() => {
     const standings = this.groupStandings();
-    const thirds = this.thirdPlaceStandings().slice(0, 8); // Top 8 third-place teams advance
-    
-    // Extract specific group positions
+    const thirds = this.thirdPlaceStandings().slice(0, 8);
+
     const getSlot = (groupId: string, rank: number) => {
-        const t = standings.get(groupId);
-        return t && t[rank] ? t[rank].teamId : null;
+        const s = standings.get(groupId);
+        return s && s[rank] ? s[rank].teamId : null;
     };
 
-    const w = [getSlot('A',0), getSlot('B',0), getSlot('C',0), getSlot('D',0), getSlot('E',0), getSlot('F',0), getSlot('G',0), getSlot('H',0), getSlot('I',0), getSlot('J',0), getSlot('K',0), getSlot('L',0)];
-    const r = [getSlot('A',1), getSlot('B',1), getSlot('C',1), getSlot('D',1), getSlot('E',1), getSlot('F',1), getSlot('G',1), getSlot('H',1), getSlot('I',1), getSlot('J',1), getSlot('K',1), getSlot('L',1)];
-    const t = thirds.map(th => th?.standing?.teamId).filter(Boolean); // Array of 8 3rd-placed teams
+    // Group winners (1A-1L) and runners-up (2A-2L), indexed 0-11
+    const groups = ['A','B','C','D','E','F','G','H','I','J','K','L'];
+    const w = groups.map(g => getSlot(g, 0));
+    const r = groups.map(g => getSlot(g, 1));
+
+    // Third-place lookup using FIFA Annex C table
+    // Determine which groups produced the 8 qualifying thirds
+    const qualifyingGroups = thirds.map(th => th?.group).filter(Boolean).sort();
+    const lookupKey = qualifyingGroups.join('');
+    const thirdAssignment = THIRD_PLACE_TABLE[lookupKey]; // [3rd for 1A, 1B, 1D, 1E, 1G, 1I, 1K, 1L]
+
+    // Map from group letter to 3rd-placed team ID from that group
+    const thirdByGroup = new Map<string, string | null>();
+    for (const th of thirds) {
+      if (th?.group && th?.standing?.teamId) {
+        thirdByGroup.set(th.group, th.standing.teamId);
+      }
+    }
+
+    // Resolve third-placed team for a given winner slot index
+    // Indices: 0=1A, 1=1B, 2=1D, 3=1E, 4=1G, 5=1I, 6=1K, 7=1L
+    const getThird = (slotIndex: number): string | null => {
+      if (!thirdAssignment || !thirdAssignment[slotIndex]) return null;
+      return thirdByGroup.get(thirdAssignment[slotIndex]) || null;
+    };
+
+    // Official FIFA R32 pairings (matches 73-88)
+    const r32Pairings: Array<[number, string | null, string | null]> = [
+      [73, r[0],  r[1]],            // 2A vs 2B
+      [74, w[4],  getThird(3)],     // 1E vs 3rd (slot 3 = 1E)
+      [75, w[5],  r[2]],            // 1F vs 2C
+      [76, w[2],  r[5]],            // 1C vs 2F
+      [77, w[8],  getThird(5)],     // 1I vs 3rd (slot 5 = 1I)
+      [78, r[4],  r[8]],            // 2E vs 2I
+      [79, w[0],  getThird(0)],     // 1A vs 3rd (slot 0 = 1A)
+      [80, w[11], getThird(7)],     // 1L vs 3rd (slot 7 = 1L)
+      [81, w[3],  getThird(2)],     // 1D vs 3rd (slot 2 = 1D)
+      [82, w[6],  getThird(4)],     // 1G vs 3rd (slot 4 = 1G)
+      [83, r[10], r[11]],           // 2K vs 2L
+      [84, w[7],  r[9]],            // 1H vs 2J
+      [85, w[1],  getThird(1)],     // 1B vs 3rd (slot 1 = 1B)
+      [86, w[9],  r[7]],            // 1J vs 2H
+      [87, w[10], getThird(6)],     // 1K vs 3rd (slot 6 = 1K)
+      [88, r[3],  r[6]],            // 2D vs 2G
+    ];
 
     // Deep clone matches to prevent mutating raw signal
     const knockoutBracket = this.matchesSignal().map(m => ({...m}));
     const winnersMap = this.knockoutWinnersSignal();
 
-    // Authentic deterministic pairings (No 1st vs 1st)
-    const pairs = [
-        [w[0], t[0] || null],   // M73: 1A vs 3rd(1)
-        [r[1], r[2]],           // M74: 2B vs 2C
-        [w[3], t[1] || null],   // M75: 1D vs 3rd(2)
-        [r[4], r[5]],           // M76: 2E vs 2F
-        [w[6], t[2] || null],   // M77: 1G vs 3rd(3)
-        [r[7], r[8]],           // M78: 2H vs 2I
-        [w[9], t[3] || null],   // M79: 1J vs 3rd(4)
-        [r[10], r[11]],         // M80: 2K vs 2L
-        [w[1], t[4] || null],   // M81: 1B vs 3rd(5)
-        [w[2], t[5] || null],   // M82: 1C vs 3rd(6)
-        [w[4], t[6] || null],   // M83: 1E vs 3rd(7)
-        [w[5], t[7] || null],   // M84: 1F vs 3rd(8)
-        [w[7], r[0]],           // M85: 1H vs 2A
-        [w[8], r[3]],           // M86: 1I vs 2D
-        [w[10], r[6]],          // M87: 1K vs 2G
-        [w[11], r[9]],          // M88: 1L vs 2J
-    ];
-    
-    // 1. Map R32 teams into matches 73-88
-    let pairIndex = 0;
-    for (let id = 73; id <= 88; id++) {
-        const m = knockoutBracket.find(x => x.id === id);
-        if (m && pairs[pairIndex]) {
-            m.homeTeamId = pairs[pairIndex][0];
-            m.awayTeamId = pairs[pairIndex][1];
-        }
-        pairIndex++;
+    // 1. Assign R32 teams
+    for (const [matchId, home, away] of r32Pairings) {
+      const m = knockoutBracket.find(x => x.id === matchId);
+      if (m) {
+        m.homeTeamId = home;
+        m.awayTeamId = away;
+      }
     }
 
-    // 2. Propagate matches through the phases
+    // 2. Propagate winners through bracket using official FIFA flow
     for (let id = 73; id <= 102; id++) {
-        const match = knockoutBracket.find(x => x.id === id);
-        if (!match) continue;
-        
-        let nextId = 0;
-        if (id >= 73 && id <= 88) nextId = Math.floor((id - 73) / 2) + 89;
-        else if (id >= 89 && id <= 96) nextId = Math.floor((id - 89) / 2) + 97;
-        else if (id >= 97 && id <= 100) nextId = Math.floor((id - 97) / 2) + 101;
-        else if (id >= 101 && id <= 102) nextId = 104; // Final
+      const match = knockoutBracket.find(x => x.id === id);
+      if (!match) continue;
 
-        const isAway = id % 2 === 0;
-        
-        // Ensure the winner is in the current match (cascade wipe if group stages changed)
-        let validWinnerId = winnersMap.get(id) || null;
-        if (validWinnerId !== match.homeTeamId && validWinnerId !== match.awayTeamId) {
-            validWinnerId = null;
-        }
+      const flow = this.BRACKET_FLOW[id];
+      if (!flow) continue;
 
-        const nextMatch = knockoutBracket.find(x => x.id === nextId);
-        if (nextMatch) {
-            if (!isAway) nextMatch.homeTeamId = validWinnerId;
-            else nextMatch.awayTeamId = validWinnerId;
-        }
+      // Validate winner still belongs to this match (cascade wipe if group stages changed)
+      let validWinnerId = winnersMap.get(id) || null;
+      if (validWinnerId !== match.homeTeamId && validWinnerId !== match.awayTeamId) {
+        validWinnerId = null;
+      }
 
-        // Third-place game propagation (Match 103)
-        if (id === 101 || id === 102) {
-            const thirdPlaceMatch = knockoutBracket.find(x => x.id === 103);
-            if (thirdPlaceMatch) {
-               let validLoserId = null;
-               if (validWinnerId && match.homeTeamId && match.awayTeamId) {
-                   validLoserId = validWinnerId === match.homeTeamId ? match.awayTeamId : match.homeTeamId;
-               }
-               if (!isAway) thirdPlaceMatch.homeTeamId = validLoserId;
-               else thirdPlaceMatch.awayTeamId = validLoserId;
-            }
+      const nextMatch = knockoutBracket.find(x => x.id === flow.nextId);
+      if (nextMatch) {
+        if (flow.isHome) nextMatch.homeTeamId = validWinnerId;
+        else nextMatch.awayTeamId = validWinnerId;
+      }
+
+      // Third-place game: losers of semi-finals (M101, M102) → M103
+      if (id === 101 || id === 102) {
+        const thirdPlaceMatch = knockoutBracket.find(x => x.id === 103);
+        if (thirdPlaceMatch) {
+          let loserId = null;
+          if (validWinnerId && match.homeTeamId && match.awayTeamId) {
+            loserId = validWinnerId === match.homeTeamId ? match.awayTeamId : match.homeTeamId;
+          }
+          if (flow.isHome) thirdPlaceMatch.homeTeamId = loserId;
+          else thirdPlaceMatch.awayTeamId = loserId;
         }
+      }
     }
 
     return knockoutBracket.filter(m => m.stage && m.stage !== 'group');
