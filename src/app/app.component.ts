@@ -53,7 +53,8 @@ import { BracketComponent } from './features/knockout-stage/bracket/bracket.comp
           <div class="w-full lg:w-80 shrink-0 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto custom-scrollbar rounded-2xl shadow-xl">
             <!-- Mobile toggle -->
             <button (click)="matchListOpen.set(!matchListOpen())"
-                    class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-indigo-600/60 to-blue-600/40 rounded-2xl border border-indigo-500/30 text-white font-black tracking-tight text-lg lg:hidden">
+                    class="w-full flex items-center justify-between px-5 py-4 bg-gradient-to-r from-indigo-600/60 to-blue-600/40 border border-indigo-500/30 text-white font-black tracking-tight text-lg lg:hidden transition-all"
+                    [ngClass]="{'rounded-2xl': !matchListOpen(), 'rounded-t-2xl rounded-b-none border-b-0': matchListOpen()}">
               <span class="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
