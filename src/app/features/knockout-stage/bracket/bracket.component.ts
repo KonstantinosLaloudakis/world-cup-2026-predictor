@@ -42,7 +42,7 @@ import { TournamentService } from '../../../core/services/tournament.service';
         <!-- Round Tabs -->
         <div class="flex gap-1.5 mb-4 overflow-x-auto pb-2">
           <button *ngFor="let round of mobileRounds; let idx = index"
-                  (click)="mobileRound.set(idx)"
+                  (click)="setMobileRound(idx)"
                   class="shrink-0 px-3 py-2 rounded-lg text-xs font-bold tracking-wide transition-all border active:scale-95"
                   [ngClass]="{
                     'bg-indigo-500/30 border-indigo-500/50 text-indigo-200 shadow-[0_0_12px_rgba(99,102,241,0.2)]': mobileRound() === idx,
@@ -455,6 +455,11 @@ export class BracketComponent {
   }
 
   @ViewChild('bracketContent') bracketContent!: ElementRef;
+
+  setMobileRound(idx: number) {
+    this.mobileRound.set(idx);
+    this.bracketContent?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   selectWinner(match: Match, teamId: string | null) {
     if (!teamId) return;

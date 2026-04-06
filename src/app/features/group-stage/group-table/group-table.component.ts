@@ -37,17 +37,17 @@ import { TournamentService } from '../../../core/services/tournament.service';
       
       <!-- Table Body -->
       <div class="overflow-hidden grow">
-        <table class="w-full text-sm text-left table-fixed">
-          <thead class="text-[10px] uppercase bg-slate-900/40 text-slate-400 tracking-wider">
+        <table class="w-full text-sm text-left">
+          <thead class="text-[10px] uppercase bg-slate-900/40 text-slate-400 tracking-wider whitespace-nowrap">
             <tr>
-              <th scope="col" class="pl-3 pr-0 py-2.5 font-bold w-8">Pos</th>
-              <th scope="col" class="px-1 py-2.5 font-bold">Team</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7">P</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7">W</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7 hidden sm:table-cell">D</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-7 hidden sm:table-cell">L</th>
-              <th scope="col" class="px-0.5 py-2.5 font-bold text-center w-9">GD</th>
-              <th scope="col" class="pl-0.5 pr-2 py-2.5 font-black text-center text-cyan-400 w-9">Pts</th>
+              <th scope="col" class="pl-3 pr-0 py-2.5 font-bold">Pos</th>
+              <th scope="col" class="px-1 py-2.5 font-bold w-full">Team</th>
+              <th scope="col" class="px-1 py-2.5 font-bold text-center">P</th>
+              <th scope="col" class="px-1 py-2.5 font-bold text-center">W</th>
+              <th scope="col" class="px-1 py-2.5 font-bold text-center hidden sm:table-cell">D</th>
+              <th scope="col" class="px-1 py-2.5 font-bold text-center hidden sm:table-cell">L</th>
+              <th scope="col" class="px-1 py-2.5 font-bold text-center">GD</th>
+              <th scope="col" class="pl-1 pr-2 py-2.5 font-black text-center text-cyan-400">Pts</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-700/30">
