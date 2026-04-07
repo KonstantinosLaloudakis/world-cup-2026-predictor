@@ -104,6 +104,75 @@ export class TournamentService {
     });
   }
 
+  public simulateKnockoutStage() {
+    // Clear all existing knockout scores first
+    this.matchesSignal.update(matches =>
+      matches.map(m => {
+        if (m.stage === 'group') return m;
+        return {
+          ...m,
+          homeScore: null, awayScore: null,
+          extraTimeHomeScore: null, extraTimeAwayScore: null,
+          penaltyHomeScore: null, penaltyAwayScore: null,
+        };
+      })
+    );
+
+    // Simulate round by round — each updateKnockoutScore triggers recomputation
+    // so the next round's teams are available
+    const roundOrder = [
+      [73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88], // R32
+      [89,90,91,92,93,94,95,96],                           // R16
+      [97,98,99,100],                                       // QF
+      [101,102],                                            // SF
+      [103],                                                // Third place
+      [104],                                                // Final
+    ];
+
+    for (const round of roundOrder) {
+      for (const matchId of round) {
+        const match = this.knockoutMatches().find(m => m.id === matchId);
+        if (!match || !match.homeTeamId || !match.awayTeamId) continue;
+
+        const homeTeam = this.teamsSignal().find(t => t.id === match.homeTeamId);
+        const awayTeam = this.teamsSignal().find(t => t.id === match.awayTeamId);
+
+        const homePower = homeTeam?.powerRating || 75;
+        const awayPower = awayTeam?.powerRating || 75;
+        const powerDiff = homePower - awayPower;
+
+        // Regular time
+        let expectedHome = 1.2 + (powerDiff / 20);
+        let expectedAway = 1.2 - (powerDiff / 20);
+        expectedHome = Math.max(0.2, Math.min(expectedHome, 4.0));
+        expectedAway = Math.max(0.2, Math.min(expectedAway, 4.0));
+
+        const homeScore = this.getPoissonRandom(expectedHome);
+        const awayScore = this.getPoissonRandom(expectedAway);
+        this.updateKnockoutScore(matchId, 'regular', homeScore, awayScore);
+
+        if (homeScore === awayScore) {
+          // Extra time — lower expected goals (0.4 base, ~30 min period)
+          let etExpHome = homeScore + Math.max(0.1, 0.4 + (powerDiff / 40));
+          let etExpAway = awayScore + Math.max(0.1, 0.4 - (powerDiff / 40));
+          const etHome = Math.max(homeScore, this.getPoissonRandom(etExpHome));
+          const etAway = Math.max(awayScore, this.getPoissonRandom(etExpAway));
+          this.updateKnockoutScore(matchId, 'extraTime', etHome, etAway);
+
+          if (etHome === etAway) {
+            // Penalties — generate until not equal
+            let penHome: number, penAway: number;
+            do {
+              penHome = 2 + this.getPoissonRandom(2); // typically 3-5
+              penAway = 2 + this.getPoissonRandom(2);
+            } while (penHome === penAway);
+            this.updateKnockoutScore(matchId, 'penalty', penHome, penAway);
+          }
+        }
+      }
+    }
+  }
+
   public groupProgress = computed(() => {
     const matches = this.matchesSignal().filter(m => m.stage === 'group' && m.groupId);
     const groups = new Map<string, { total: number, scored: number }>();

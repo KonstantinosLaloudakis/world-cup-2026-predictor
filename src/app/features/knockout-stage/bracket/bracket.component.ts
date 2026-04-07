@@ -26,13 +26,19 @@ import { TournamentService } from '../../../core/services/tournament.service';
         </p>
       </div>
 
-      <!-- Download Button -->
-      <button (click)="exportBracket()" class="absolute top-3 right-3 sm:top-5 sm:right-5 z-30 flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 rounded-xl bg-slate-800/90 backdrop-blur hover:bg-slate-700 active:bg-slate-600 text-slate-300 font-bold tracking-wide transition-all border border-slate-600 shadow-lg hover:text-white">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-        </svg>
-        <span class="hidden sm:inline">Download</span>
-      </button>
+      <!-- Action Buttons -->
+      <div class="absolute top-3 right-3 sm:top-5 sm:right-5 z-30 flex items-center gap-2">
+        <button (click)="simulateKnockout()" class="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 rounded-xl bg-indigo-500/20 backdrop-blur hover:bg-indigo-500/30 active:bg-indigo-500/40 text-indigo-300 font-bold tracking-wide transition-all border border-indigo-500/50 shadow-lg hover:text-white">
+          <span class="text-sm leading-none">&#10024;</span>
+          <span class="hidden sm:inline text-xs tracking-widest uppercase">Simulate</span>
+        </button>
+        <button (click)="exportBracket()" class="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 rounded-xl bg-slate-800/90 backdrop-blur hover:bg-slate-700 active:bg-slate-600 text-slate-300 font-bold tracking-wide transition-all border border-slate-600 shadow-lg hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span class="hidden sm:inline text-xs tracking-widest uppercase">Download</span>
+        </button>
+      </div>
 
       <!-- Empty state hint -->
       <div *ngIf="bracketEmpty()" class="mb-6 px-4 py-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-sm font-medium flex items-center gap-3">
@@ -565,6 +571,12 @@ export class BracketComponent implements DoCheck {
     const h = (homeScore === '' || homeScore === null || homeScore === undefined) ? null : Number(homeScore);
     const a = (awayScore === '' || awayScore === null || awayScore === undefined) ? null : Number(awayScore);
     this.tournamentService.updateKnockoutScore(matchId, field, h, a);
+  }
+
+  simulateKnockout() {
+    if (confirm('This will overwrite all current knockout predictions with a realistic simulation. Proceed?')) {
+      this.tournamentService.simulateKnockoutStage();
+    }
   }
 
   private finalWinner = computed(() => {
