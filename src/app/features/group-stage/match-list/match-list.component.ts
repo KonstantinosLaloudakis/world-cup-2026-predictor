@@ -62,15 +62,15 @@ interface MatchSection {
 
         <!-- Sticky Navigation -->
         <div class="sticky top-0 z-20 -mx-3 px-3 py-2 bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50 mb-4 shadow-md flex gap-2 overflow-x-auto custom-scrollbar pb-3">
-          <button *ngFor="let section of sections()"
-                  (click)="scrollToSection(section.id)"
+          <button *ngFor="let nav of navItems()"
+                  (click)="scrollToSection(nav.id)"
                   class="shrink-0 px-3.5 py-2 sm:px-3 sm:py-1 rounded-full text-sm sm:text-xs font-bold border transition-colors relative"
                   [ngClass]="{
-                    'border-emerald-500/50 bg-emerald-500/15 text-emerald-300': isSectionComplete(section),
-                    'border-slate-700/50 bg-slate-800 text-slate-400 hover:bg-indigo-500/20 hover:border-indigo-500/50 hover:text-indigo-300': !isSectionComplete(section)
+                    'border-emerald-500/50 bg-emerald-500/15 text-emerald-300': nav.complete,
+                    'border-slate-700/50 bg-slate-800 text-slate-400 hover:bg-indigo-500/20 hover:border-indigo-500/50 hover:text-indigo-300': !nav.complete
                   }">
-            {{ viewMode() === 'group' ? section.label.replace('Group ', '') : getShortDateLabel(section.label) }}
-            <span *ngIf="isSectionComplete(section)" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span>
+            {{ nav.label }}
+            <span *ngIf="nav.complete" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span>
           </button>
         </div>
 
@@ -238,6 +238,21 @@ export class MatchListComponent {
     }
   });
 
+  navItems = computed(() => {
+    return this.sections().map(section => ({
+      id: section.id,
+      label: this.viewMode() === 'group'
+        ? section.label.replace('Group ', '')
+        : this.formatNavDate(section.id.replace('date-', '')),
+      complete: this.isSectionComplete(section)
+    }));
+  });
+
+  private formatNavDate(dateStr: string): string {
+    const d = new Date(dateStr + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
   isSectionComplete(section: MatchSection): boolean {
     return section.matches.length > 0 && section.matches.every(m => m.homeScore !== null && m.awayScore !== null);
   }
@@ -257,12 +272,6 @@ export class MatchListComponent {
     if (el && container) {
       container.scrollTo({ top: el.offsetTop - 50, behavior: 'smooth' });
     }
-  }
-
-  /** Strips leading weekday from a date label like "Thu, Jun 11" → "Jun 11" */
-  getShortDateLabel(label: string): string {
-    const commaIdx = label.indexOf(', ');
-    return commaIdx >= 0 ? label.slice(commaIdx + 2) : label;
   }
 
   trackBySectionId(index: number, section: MatchSection): string {
