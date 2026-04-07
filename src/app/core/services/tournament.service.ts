@@ -275,8 +275,48 @@ export class TournamentService {
   });
 
   public updateMatchScore(matchId: number, homeScore: number | null, awayScore: number | null) {
-    this.matchesSignal.update(matches => 
+    this.matchesSignal.update(matches =>
       matches.map(m => m.id === matchId ? { ...m, homeScore, awayScore } : m)
+    );
+  }
+
+  public updateKnockoutScore(
+    matchId: number,
+    field: 'regular' | 'extraTime' | 'penalty',
+    homeScore: number | null,
+    awayScore: number | null
+  ) {
+    this.matchesSignal.update(matches =>
+      matches.map(m => {
+        if (m.id !== matchId) return m;
+
+        const updated = { ...m };
+
+        if (field === 'regular') {
+          updated.homeScore = homeScore;
+          updated.awayScore = awayScore;
+          const isDraw = homeScore !== null && awayScore !== null && homeScore === awayScore;
+          if (!isDraw) {
+            updated.extraTimeHomeScore = null;
+            updated.extraTimeAwayScore = null;
+            updated.penaltyHomeScore = null;
+            updated.penaltyAwayScore = null;
+          }
+        } else if (field === 'extraTime') {
+          updated.extraTimeHomeScore = homeScore;
+          updated.extraTimeAwayScore = awayScore;
+          const isDraw = homeScore !== null && awayScore !== null && homeScore === awayScore;
+          if (!isDraw) {
+            updated.penaltyHomeScore = null;
+            updated.penaltyAwayScore = null;
+          }
+        } else if (field === 'penalty') {
+          updated.penaltyHomeScore = homeScore;
+          updated.penaltyAwayScore = awayScore;
+        }
+
+        return updated;
+      })
     );
   }
 
