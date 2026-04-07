@@ -5,6 +5,13 @@ import { Match } from '../../../core/models/match.interface';
 import { Team } from '../../../core/models/team.interface';
 import { TournamentService } from '../../../core/services/tournament.service';
 
+interface MatchSection {
+  id: string;
+  label: string;
+  sublabel?: string;
+  matches: Match[];
+}
+
 @Component({
   selector: 'app-match-list',
   standalone: true,
@@ -12,7 +19,7 @@ import { TournamentService } from '../../../core/services/tournament.service';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="h-full flex flex-col bg-slate-800/40 backdrop-blur-xl border border-slate-700/50 rounded-t-none rounded-b-2xl lg:rounded-2xl shadow-2xl overflow-hidden">
-      
+
       <!-- Header (hidden on mobile where the parent toggle serves as header) -->
       <div class="hidden lg:block bg-gradient-to-r from-indigo-600/60 to-blue-600/40 px-5 py-4 border-b border-indigo-500/30 shrink-0">
         <h2 class="text-xl font-black tracking-tight text-white drop-shadow-sm flex items-center gap-2">
@@ -22,34 +29,61 @@ import { TournamentService } from '../../../core/services/tournament.service';
           Group Stage Matches
         </h2>
         <p class="text-indigo-200 text-xs mt-1 font-medium">Predict the scores to dynamically update standings.</p>
+        <div class="flex gap-1 mt-2">
+          <button (click)="viewMode.set('group')"
+                  class="px-3 py-1 rounded-full text-xs font-bold transition-all"
+                  [ngClass]="{'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50': viewMode() === 'group', 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:text-slate-300': viewMode() !== 'group'}">
+            By Group
+          </button>
+          <button (click)="viewMode.set('date')"
+                  class="px-3 py-1 rounded-full text-xs font-bold transition-all"
+                  [ngClass]="{'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50': viewMode() === 'date', 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:text-slate-300': viewMode() !== 'date'}">
+            By Date
+          </button>
+        </div>
       </div>
 
       <!-- Card Body -->
       <div class="px-3 pb-3 h-full overflow-y-auto custom-scrollbar relative" id="match-scroll-container">
-        
+
+        <!-- Mobile view mode toggle -->
+        <div class="flex gap-1 py-2 lg:hidden">
+          <button (click)="viewMode.set('group')"
+                  class="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
+                  [ngClass]="{'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50': viewMode() === 'group', 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:text-slate-300': viewMode() !== 'group'}">
+            By Group
+          </button>
+          <button (click)="viewMode.set('date')"
+                  class="px-3 py-1.5 rounded-full text-xs font-bold transition-all"
+                  [ngClass]="{'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50': viewMode() === 'date', 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:text-slate-300': viewMode() !== 'date'}">
+            By Date
+          </button>
+        </div>
+
         <!-- Sticky Navigation -->
         <div class="sticky top-0 z-20 -mx-3 px-3 py-2 bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50 mb-4 shadow-md flex gap-2 overflow-x-auto custom-scrollbar pb-3">
-          <button *ngFor="let group of groupedMatches()"
-                  (click)="scrollToGroup(group.groupId)"
+          <button *ngFor="let section of sections()"
+                  (click)="scrollToSection(section.id)"
                   class="shrink-0 px-3.5 py-2 sm:px-3 sm:py-1 rounded-full text-sm sm:text-xs font-bold border transition-colors relative"
                   [ngClass]="{
-                    'border-emerald-500/50 bg-emerald-500/15 text-emerald-300': isGroupComplete(group),
-                    'border-slate-700/50 bg-slate-800 text-slate-400 hover:bg-indigo-500/20 hover:border-indigo-500/50 hover:text-indigo-300': !isGroupComplete(group)
+                    'border-emerald-500/50 bg-emerald-500/15 text-emerald-300': isSectionComplete(section),
+                    'border-slate-700/50 bg-slate-800 text-slate-400 hover:bg-indigo-500/20 hover:border-indigo-500/50 hover:text-indigo-300': !isSectionComplete(section)
                   }">
-            {{ group.groupId }}
-            <span *ngIf="isGroupComplete(group)" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span>
+            {{ viewMode() === 'group' ? section.label.replace('Group ', '') : getShortDateLabel(section.label) }}
+            <span *ngIf="isSectionComplete(section)" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.6)]"></span>
           </button>
         </div>
 
         <div class="space-y-6 pb-6">
-          <div *ngFor="let group of groupedMatches(); trackBy: trackByGroupId" [id]="'group-' + group.groupId">
+          <div *ngFor="let section of sections(); trackBy: trackBySectionId" [id]="section.id">
           <div class="space-y-3">
             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1 border-l-2 border-indigo-500 relative">
-              <span class="bg-slate-900/40 px-2 py-0.5 rounded text-indigo-300">Group {{ group.groupId }}</span>
+              <span class="bg-slate-900/40 px-2 py-0.5 rounded text-indigo-300">{{ section.label }}</span>
+              <span *ngIf="section.sublabel" class="text-slate-500 font-medium normal-case ml-1">{{ section.sublabel }}</span>
             </h3>
 
             <div class="space-y-2">
-              <div *ngFor="let match of group.matches; trackBy: trackByMatchId" 
+              <div *ngFor="let match of section.matches; trackBy: trackByMatchId"
                    class="group/match rounded-xl border p-3 transition-all duration-300 relative overflow-hidden"
                    (mouseenter)="setHover(match.homeTeamId)"
                    (mouseleave)="setHover(null)"
@@ -57,12 +91,12 @@ import { TournamentService } from '../../../core/services/tournament.service';
                      'bg-slate-900/50 border-slate-700/30 hover:border-indigo-500/40 hover:bg-slate-800/80': !isMatchHovered(match),
                      'bg-indigo-900/40 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.2)] scale-[1.02] z-10': isMatchHovered(match)
                    }">
-                
+
                 <!-- Subtle background glow for hovered match -->
                 <div *ngIf="isMatchHovered(match)" class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 pointer-events-none"></div>
-                
+
                 <div class="flex items-center justify-between gap-2">
-                  
+
                   <!-- Home Team -->
                   <div class="flex-1 flex items-center gap-1.5 justify-end min-w-0">
                     <span class="text-[13px] font-bold transition-all duration-300 truncate text-right group-hover/match:text-white"
@@ -109,7 +143,7 @@ import { TournamentService } from '../../../core/services/tournament.service';
                       {{ teamMap.get(match.awayTeamId!)?.name || match.awayTeamId }}
                     </span>
                   </div>
-                  
+
                 </div>
 
               </div>
@@ -135,12 +169,12 @@ import { TournamentService } from '../../../core/services/tournament.service';
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: rgba(79, 70, 229, 0.6);
     }
-    
+
     /* Remove arrows from number inputs */
-    input[type=number]::-webkit-inner-spin-button, 
-    input[type=number]::-webkit-outer-spin-button { 
-      -webkit-appearance: none; 
-      margin: 0; 
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
     input[type=number] {
       -moz-appearance: textfield;
@@ -160,24 +194,52 @@ export class MatchListComponent {
   private matchesSignal = signal<Match[]>([]);
   hoveredTeam = this.tournamentService.hoveredTeam;
 
-  groupedMatches = computed(() => {
-    const groups = new Map<string, Match[]>();
+  viewMode = signal<'group' | 'date'>('group');
+
+  sections = computed((): MatchSection[] => {
     const groupStageMatches = this.matchesSignal().filter(m => m.stage === 'group' && m.groupId);
 
-    for (const match of groupStageMatches) {
-      if (!groups.has(match.groupId!)) {
-        groups.set(match.groupId!, []);
+    if (this.viewMode() === 'group') {
+      const groups = new Map<string, Match[]>();
+      for (const match of groupStageMatches) {
+        if (!groups.has(match.groupId!)) {
+          groups.set(match.groupId!, []);
+        }
+        groups.get(match.groupId!)!.push(match);
       }
-      groups.get(match.groupId!)!.push(match);
+      return Array.from(groups.entries())
+        .map(([groupId, matches]) => ({
+          id: 'group-' + groupId,
+          label: 'Group ' + groupId,
+          matches
+        }))
+        .sort((a, b) => a.id.localeCompare(b.id));
+    } else {
+      const dates = new Map<string, Match[]>();
+      for (const match of groupStageMatches) {
+        if (!dates.has(match.date)) {
+          dates.set(match.date, []);
+        }
+        dates.get(match.date)!.push(match);
+      }
+      return Array.from(dates.entries())
+        .map(([date, matches]) => {
+          matches.sort((a, b) => (a.groupId || '').localeCompare(b.groupId || '') || a.id - b.id);
+          const d = new Date(date + 'T12:00:00');
+          const label = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+          return {
+            id: 'date-' + date,
+            label,
+            sublabel: `(${matches.length} matches)`,
+            matches
+          };
+        })
+        .sort((a, b) => a.id.localeCompare(b.id));
     }
-
-    return Array.from(groups.entries())
-      .map(([groupId, matches]) => ({ groupId, matches }))
-      .sort((a, b) => a.groupId.localeCompare(b.groupId));
   });
 
-  isGroupComplete(group: { groupId: string, matches: Match[] }): boolean {
-    return group.matches.length > 0 && group.matches.every(m => m.homeScore !== null && m.awayScore !== null);
+  isSectionComplete(section: MatchSection): boolean {
+    return section.matches.length > 0 && section.matches.every(m => m.homeScore !== null && m.awayScore !== null);
   }
 
   isMatchHovered(match: Match): boolean {
@@ -189,16 +251,22 @@ export class MatchListComponent {
     this.tournamentService.setHoveredTeam(teamId);
   }
 
-  scrollToGroup(groupId: string) {
-    const el = document.getElementById('group-' + groupId);
+  scrollToSection(sectionId: string) {
+    const el = document.getElementById(sectionId);
     const container = document.getElementById('match-scroll-container');
     if (el && container) {
       container.scrollTo({ top: el.offsetTop - 50, behavior: 'smooth' });
     }
   }
 
-  trackByGroupId(index: number, group: { groupId: string }): string {
-    return group.groupId;
+  /** Strips leading weekday from a date label like "Thu, Jun 11" → "Jun 11" */
+  getShortDateLabel(label: string): string {
+    const commaIdx = label.indexOf(', ');
+    return commaIdx >= 0 ? label.slice(commaIdx + 2) : label;
+  }
+
+  trackBySectionId(index: number, section: MatchSection): string {
+    return section.id;
   }
 
   trackByMatchId(index: number, match: Match): number {
@@ -209,7 +277,7 @@ export class MatchListComponent {
     // Handle empty string as null
     const h = (homeScore === '' || homeScore === null) ? null : Number(homeScore);
     const a = (awayScore === '' || awayScore === null) ? null : Number(awayScore);
-    
+
     this.scoreUpdate.emit({ id: matchId, home: h, away: a });
   }
 }
