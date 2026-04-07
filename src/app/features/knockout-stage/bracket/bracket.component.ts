@@ -473,7 +473,7 @@ import { ShareService } from '../../../core/services/share.service';
     }
 
     .animate-advance {
-      animation: slide-in-right 300ms ease-out;
+      animation: slide-in-right 500ms ease-out;
     }
   `]
 })
@@ -521,9 +521,9 @@ export class BracketComponent implements DoCheck {
         if (this.advanceClearTimer) clearTimeout(this.advanceClearTimer);
         this.advanceClearTimer = setTimeout(() => {
           this.recentlyAdvanced.set(new Set());
-        }, 400);
+        }, 600);
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   @Input() set matches(val: Match[]) {
