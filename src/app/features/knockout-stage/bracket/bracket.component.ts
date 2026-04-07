@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, DoCheck, Input, inject, ViewChild, ElementRef, computed, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DoCheck, Input, inject, ViewChild, ElementRef, computed, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { toPng } from 'html-to-image';
@@ -252,6 +252,7 @@ import { ShareService } from '../../../core/services/share.service';
 
         <!-- Home Team Row -->
         <div class="flex items-center p-2.5 sm:p-2 rounded-t-xl transition-all"
+             [class.animate-advance]="isRecentlyAdvanced(match.id, 'home')"
              [ngClass]="{
                'bg-indigo-900/60': isWinner(match, match.homeTeamId),
                'opacity-30 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId)
@@ -276,6 +277,7 @@ import { ShareService } from '../../../core/services/share.service';
 
         <!-- Away Team Row -->
         <div class="flex items-center p-2.5 sm:p-2 rounded-b-xl transition-all"
+             [class.animate-advance]="isRecentlyAdvanced(match.id, 'away')"
              [ngClass]="{
                'bg-indigo-900/60': isWinner(match, match.awayTeamId),
                'opacity-30 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId)
@@ -342,6 +344,7 @@ import { ShareService } from '../../../core/services/share.service';
 
         <!-- Home Team -->
         <div class="flex items-center z-10 p-3 sm:p-2 rounded-t-2xl transition-all"
+             [class.animate-advance]="isRecentlyAdvanced(match.id, 'home')"
              [ngClass]="{ 'bg-amber-500/20': isWinner(match, match.homeTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId) }">
           <div class="flex items-center gap-2 flex-1 min-w-0">
             <img *ngIf="getTeam(match.homeTeamId)?.flagUrl" [src]="getTeam(match.homeTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
@@ -357,6 +360,7 @@ import { ShareService } from '../../../core/services/share.service';
 
         <!-- Away Team -->
         <div class="flex items-center z-10 p-3 sm:p-2 transition-all"
+             [class.animate-advance]="isRecentlyAdvanced(match.id, 'away')"
              [ngClass]="{ 'bg-amber-500/20': isWinner(match, match.awayTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId) }">
           <div class="flex items-center gap-2 flex-1 min-w-0">
             <img *ngIf="getTeam(match.awayTeamId)?.flagUrl" [src]="getTeam(match.awayTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
@@ -456,12 +460,71 @@ import { ShareService } from '../../../core/services/share.service';
     input[type=number] {
       -moz-appearance: textfield;
     }
+
+    @keyframes slide-in-right {
+      from {
+        opacity: 0;
+        transform: translateX(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .animate-advance {
+      animation: slide-in-right 300ms ease-out;
+    }
   `]
 })
 export class BracketComponent implements DoCheck {
   private tournamentService = inject(TournamentService);
   private shareService = inject(ShareService);
   shareCopied = signal(false);
+
+  // Animation: track which slots just received a new team
+  recentlyAdvanced = signal<Set<string>>(new Set());
+  private previousTeamSlots = new Map<string, string | null>();
+  private advanceInitialized = false;
+  private advanceClearTimer: ReturnType<typeof setTimeout> | null = null;
+
+  constructor() {
+    effect(() => {
+      const matches = this.matchesSignal();
+      const knockout = matches.filter(m => m.stage && m.stage !== 'group');
+      const newAdvanced = new Set<string>();
+
+      for (const match of knockout) {
+        const homeKey = `${match.id}-home`;
+        const awayKey = `${match.id}-away`;
+
+        if (this.advanceInitialized) {
+          const prevHome = this.previousTeamSlots.get(homeKey);
+          const prevAway = this.previousTeamSlots.get(awayKey);
+
+          if (match.homeTeamId && match.homeTeamId !== prevHome) {
+            newAdvanced.add(homeKey);
+          }
+          if (match.awayTeamId && match.awayTeamId !== prevAway) {
+            newAdvanced.add(awayKey);
+          }
+        }
+
+        this.previousTeamSlots.set(homeKey, match.homeTeamId);
+        this.previousTeamSlots.set(awayKey, match.awayTeamId);
+      }
+
+      this.advanceInitialized = true;
+
+      if (newAdvanced.size > 0) {
+        this.recentlyAdvanced.set(newAdvanced);
+        if (this.advanceClearTimer) clearTimeout(this.advanceClearTimer);
+        this.advanceClearTimer = setTimeout(() => {
+          this.recentlyAdvanced.set(new Set());
+        }, 400);
+      }
+    });
+  }
 
   @Input() set matches(val: Match[]) {
     this.matchesSignal.set(val);
@@ -529,6 +592,10 @@ export class BracketComponent implements DoCheck {
   isWinner(match: Match, teamId: string | null): boolean {
     if (!teamId) return false;
     return this.winners().get(match.id) === teamId;
+  }
+
+  isRecentlyAdvanced(matchId: number, slot: 'home' | 'away'): boolean {
+    return this.recentlyAdvanced().has(`${matchId}-${slot}`);
   }
 
   trackByMatchId(index: number, match: Match): number {
