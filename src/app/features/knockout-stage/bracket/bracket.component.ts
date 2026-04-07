@@ -480,16 +480,9 @@ export class BracketComponent {
   }
 
   selectWinner(match: Match, teamId: string | null) {
-    if (!teamId) return;
-
-    if (this.isWinner(match, teamId)) {
-      this.tournamentService.setKnockoutWinner(match.id, null);
-    } else {
-      this.tournamentService.setKnockoutWinner(match.id, teamId);
-
-      if (match.id === 104) {
-        this.triggerConfetti();
-      }
+    // Winners are now derived from scores via computed signal; no manual selection needed.
+    if (match.id === 104 && teamId && this.isWinner(match, teamId)) {
+      this.triggerConfetti();
     }
   }
 

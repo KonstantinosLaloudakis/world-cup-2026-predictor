@@ -143,5 +143,33 @@ describe('TournamentService', () => {
       expect(match?.penaltyHomeScore).toBeNull();
       expect(match?.penaltyAwayScore).toBeNull();
     });
+
+    it('should propagate knockout winner to next round via scores', () => {
+      service.simulateGroupStage();
+
+      const knockoutMatches = service.knockoutMatches();
+      const r32Match = knockoutMatches.find(m => m.stage === 'round_32' && m.homeTeamId && m.awayTeamId);
+      if (!r32Match) return;
+
+      service.updateKnockoutScore(r32Match.id, 'regular', 3, 0);
+
+      const winners = service.knockoutWinners();
+      expect(winners.get(r32Match.id)).toBe(r32Match.homeTeamId!);
+    });
+
+    it('should propagate penalty winner to next round', () => {
+      service.simulateGroupStage();
+
+      const knockoutMatches = service.knockoutMatches();
+      const r32Match = knockoutMatches.find(m => m.stage === 'round_32' && m.homeTeamId && m.awayTeamId);
+      if (!r32Match) return;
+
+      service.updateKnockoutScore(r32Match.id, 'regular', 1, 1);
+      service.updateKnockoutScore(r32Match.id, 'extraTime', 2, 2);
+      service.updateKnockoutScore(r32Match.id, 'penalty', 4, 2);
+
+      const winners = service.knockoutWinners();
+      expect(winners.get(r32Match.id)).toBe(r32Match.homeTeamId!);
+    });
   });
 });

@@ -12,14 +12,11 @@ export class TournamentService {
   private matchesSignal = signal<Match[]>(data.matches as Match[]);
   private teamsSignal = signal<Team[]>(data.teams);
   private activeHoverSignal = signal<string | null>(null);
-  public knockoutWinnersSignal = signal<Map<number, string>>(new Map());
-
   private readonly STORAGE_KEY = 'world_cup_2026_state';
 
   public matches = this.matchesSignal.asReadonly();
   public teams = this.teamsSignal.asReadonly();
   public hoveredTeam = this.activeHoverSignal.asReadonly();
-  public knockoutWinners = this.knockoutWinnersSignal.asReadonly();
 
   public teamMap = computed(() => {
     const map = new Map<string, Team>();
@@ -33,8 +30,7 @@ export class TournamentService {
     // Auto-save to localStorage whenever critical state changes
     effect(() => {
       const stateToSave = {
-        matches: this.matchesSignal(),
-        knockoutWinners: Array.from(this.knockoutWinnersSignal().entries())
+        matches: this.matchesSignal()
       };
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(stateToSave));
     });
@@ -48,9 +44,6 @@ export class TournamentService {
         if (parsed.matches && Array.isArray(parsed.matches)) {
           this.matchesSignal.set(parsed.matches);
         }
-        if (parsed.knockoutWinners && Array.isArray(parsed.knockoutWinners)) {
-          this.knockoutWinnersSignal.set(new Map(parsed.knockoutWinners));
-        }
       } catch (e) {
         console.error('Failed to parse local storage state:', e);
       }
@@ -60,7 +53,6 @@ export class TournamentService {
   public resetTournament() {
     localStorage.removeItem(this.STORAGE_KEY);
     this.matchesSignal.set(JSON.parse(JSON.stringify(data.matches)));
-    this.knockoutWinnersSignal.set(new Map());
     this.activeHoverSignal.set(null);
   }
 
@@ -226,7 +218,6 @@ export class TournamentService {
 
     // Deep clone matches to prevent mutating raw signal
     const knockoutBracket = this.matchesSignal().map(m => ({...m}));
-    const winnersMap = this.knockoutWinnersSignal();
 
     // 1. Assign R32 teams
     for (const [matchId, home, away] of r32Pairings) {
@@ -237,7 +228,7 @@ export class TournamentService {
       }
     }
 
-    // 2. Propagate winners through bracket using official FIFA flow
+    // 2. Propagate winners through bracket using scores
     for (let id = 73; id <= 102; id++) {
       const match = knockoutBracket.find(x => x.id === id);
       if (!match) continue;
@@ -245,11 +236,21 @@ export class TournamentService {
       const flow = this.BRACKET_FLOW[id];
       if (!flow) continue;
 
-      // Validate winner still belongs to this match (cascade wipe if group stages changed)
-      let validWinnerId = winnersMap.get(id) || null;
-      if (validWinnerId !== match.homeTeamId && validWinnerId !== match.awayTeamId) {
-        validWinnerId = null;
-      }
+      // Get original match scores from matchesSignal
+      const originalMatch = this.matchesSignal().find(x => x.id === id);
+
+      // Build match with propagated teams + original scores for derivation
+      const matchForDerivation: Match = {
+        ...match,
+        homeScore: originalMatch?.homeScore ?? null,
+        awayScore: originalMatch?.awayScore ?? null,
+        extraTimeHomeScore: originalMatch?.extraTimeHomeScore ?? null,
+        extraTimeAwayScore: originalMatch?.extraTimeAwayScore ?? null,
+        penaltyHomeScore: originalMatch?.penaltyHomeScore ?? null,
+        penaltyAwayScore: originalMatch?.penaltyAwayScore ?? null,
+      };
+
+      const validWinnerId = this.deriveKnockoutWinner(matchForDerivation);
 
       const nextMatch = knockoutBracket.find(x => x.id === flow.nextId);
       if (nextMatch) {
@@ -261,7 +262,7 @@ export class TournamentService {
       if (id === 101 || id === 102) {
         const thirdPlaceMatch = knockoutBracket.find(x => x.id === 103);
         if (thirdPlaceMatch) {
-          let loserId = null;
+          let loserId: string | null = null;
           if (validWinnerId && match.homeTeamId && match.awayTeamId) {
             loserId = validWinnerId === match.homeTeamId ? match.awayTeamId : match.homeTeamId;
           }
@@ -269,9 +270,27 @@ export class TournamentService {
           else thirdPlaceMatch.awayTeamId = loserId;
         }
       }
+
+      // Copy scores onto the propagated bracket match for UI consumption
+      match.homeScore = matchForDerivation.homeScore;
+      match.awayScore = matchForDerivation.awayScore;
+      match.extraTimeHomeScore = matchForDerivation.extraTimeHomeScore;
+      match.extraTimeAwayScore = matchForDerivation.extraTimeAwayScore;
+      match.penaltyHomeScore = matchForDerivation.penaltyHomeScore;
+      match.penaltyAwayScore = matchForDerivation.penaltyAwayScore;
     }
 
     return knockoutBracket.filter(m => m.stage && m.stage !== 'group');
+  });
+
+  public knockoutWinners = computed(() => {
+    const matches = this.knockoutMatches();
+    const map = new Map<number, string>();
+    for (const m of matches) {
+      const winner = this.deriveKnockoutWinner(m);
+      if (winner) map.set(m.id, winner);
+    }
+    return map;
   });
 
   public updateMatchScore(matchId: number, homeScore: number | null, awayScore: number | null) {
@@ -326,13 +345,27 @@ export class TournamentService {
     }
   }
 
-  public setKnockoutWinner(matchId: number, teamId: string | null) {
-    this.knockoutWinnersSignal.update(map => {
-      const newMap = new Map(map);
-      if (teamId) newMap.set(matchId, teamId);
-      else newMap.delete(matchId);
-      return newMap;
-    });
+  private deriveKnockoutWinner(match: Match): string | null {
+    if (match.homeScore === null || match.awayScore === null) return null;
+    if (!match.homeTeamId || !match.awayTeamId) return null;
+
+    if (match.homeScore !== match.awayScore) {
+      return match.homeScore > match.awayScore ? match.homeTeamId : match.awayTeamId;
+    }
+
+    if (match.extraTimeHomeScore === null || match.extraTimeAwayScore === null) return null;
+
+    if (match.extraTimeHomeScore !== match.extraTimeAwayScore) {
+      return match.extraTimeHomeScore > match.extraTimeAwayScore ? match.homeTeamId : match.awayTeamId;
+    }
+
+    if (match.penaltyHomeScore === null || match.penaltyAwayScore === null) return null;
+
+    if (match.penaltyHomeScore !== match.penaltyAwayScore) {
+      return match.penaltyHomeScore > match.penaltyAwayScore ? match.homeTeamId : match.awayTeamId;
+    }
+
+    return null;
   }
 
   public clearGroupScores(groupId: string) {
