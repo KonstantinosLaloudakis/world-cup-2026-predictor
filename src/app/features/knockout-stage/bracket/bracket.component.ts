@@ -228,6 +228,11 @@ import { TournamentService } from '../../../core/services/tournament.service';
              'bg-slate-800/30 border border-dashed border-slate-700/40 opacity-50': !match.homeTeamId && !match.awayTeamId
            }">
 
+        <!-- Score Summary -->
+        <div *ngIf="getMatchSummary(match)" class="text-center py-1 text-[10px] font-bold tracking-wider text-slate-400">
+          {{ getMatchSummary(match) }}
+        </div>
+
         <!-- Home Team Row -->
         <div class="flex items-center p-2.5 sm:p-2 rounded-t-xl transition-all"
              [ngClass]="{
@@ -312,6 +317,11 @@ import { TournamentService } from '../../../core/services/tournament.service';
     <ng-template #finalCard let-match="match">
       <div class="bg-gradient-to-br from-amber-500/20 to-amber-900/20 border border-amber-500/50 rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col relative overflow-hidden">
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+
+        <!-- Score Summary -->
+        <div *ngIf="getMatchSummary(match)" class="text-center py-1 text-[10px] font-bold tracking-wider text-amber-400/80 z-10">
+          {{ getMatchSummary(match) }}
+        </div>
 
         <!-- Home Team -->
         <div class="flex items-center z-10 p-3 sm:p-2 rounded-t-2xl transition-all"
@@ -511,6 +521,27 @@ export class BracketComponent implements DoCheck {
   setMobileRound(idx: number) {
     this.mobileRound.set(idx);
     this.bracketContent?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  getMatchSummary(match: Match): string | null {
+    if (match.homeScore === null || match.awayScore === null) return null;
+
+    const rt = `${match.homeScore} - ${match.awayScore}`;
+
+    if (match.homeScore !== match.awayScore) return rt;
+
+    if (match.extraTimeHomeScore !== null && match.extraTimeAwayScore !== null) {
+      const et = `${match.extraTimeHomeScore} - ${match.extraTimeAwayScore}`;
+      if (match.extraTimeHomeScore !== match.extraTimeAwayScore) {
+        return `${rt} (AET ${et})`;
+      }
+
+      if (match.penaltyHomeScore !== null && match.penaltyAwayScore !== null) {
+        return `${rt} (AET ${et}, PEN ${match.penaltyHomeScore} - ${match.penaltyAwayScore})`;
+      }
+    }
+
+    return rt;
   }
 
   isRegularTimeDraw(match: Match): boolean {
