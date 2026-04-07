@@ -7,4 +7,8 @@ export interface Match {
   homeScore: number | null;
   awayScore: number | null;
   date: string;
+  extraTimeHomeScore: number | null;
+  extraTimeAwayScore: number | null;
+  penaltyHomeScore: number | null;
+  penaltyAwayScore: number | null;
 }
