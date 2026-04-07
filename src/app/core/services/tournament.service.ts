@@ -119,6 +119,14 @@ export class TournamentService {
     return { complete, total, scoredMatches, totalMatches: matches.length };
   });
 
+  public knockoutProgress = computed(() => {
+    const matches = this.knockoutMatches();
+    const winners = this.knockoutWinners();
+    const total = matches.length;
+    const predicted = matches.filter(m => winners.has(m.id)).length;
+    return { predicted, total };
+  });
+
   public groupStandings = computed(() => {
     return this.calculateStandings(this.teamsSignal(), this.matchesSignal());
   });

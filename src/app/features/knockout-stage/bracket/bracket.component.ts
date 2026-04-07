@@ -20,6 +20,10 @@ import { TournamentService } from '../../../core/services/tournament.service';
       <div class="mb-6 sm:mb-8 pr-12 sm:pr-0">
         <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tighter">Knockout Stage</h2>
         <p class="text-slate-400 font-medium text-sm sm:text-base">Round of 32 to the Final</p>
+        <p *ngIf="knockoutProgress().predicted > 0" class="text-sm font-bold mt-1"
+           [ngClass]="{'text-emerald-400': knockoutProgress().predicted === knockoutProgress().total, 'text-indigo-400': knockoutProgress().predicted < knockoutProgress().total}">
+          {{ knockoutProgress().predicted }}/{{ knockoutProgress().total }} matches predicted
+        </p>
       </div>
 
       <!-- Download Button -->
@@ -437,6 +441,7 @@ export class BracketComponent implements DoCheck {
 
   private matchesSignal = signal<Match[]>([]);
   winners = this.tournamentService.knockoutWinners;
+  knockoutProgress = this.tournamentService.knockoutProgress;
   mobileRound = signal(0);
   mobileRounds = ['R32', 'R16', 'QF', 'Semi', 'Final'];
 
