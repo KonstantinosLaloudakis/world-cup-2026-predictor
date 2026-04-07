@@ -54,7 +54,7 @@ import { Team } from '../../core/models/team.interface';
               <span class="text-white font-bold text-sm">{{ biggestUpset()!.winner.name }}</span>
             </div>
             <div class="text-slate-400 text-xs mt-0.5">def. {{ biggestUpset()!.loser.name }}</div>
-            <div class="text-pink-300 text-xs font-bold mt-1">Rating gap: {{ biggestUpset()!.ratingDiff }}</div>
+            <div class="text-pink-300 text-xs font-bold mt-1">Rating gap: {{ biggestUpset()!.ratingDiff | number:'1.0-0' }}</div>
           </div>
 
           <!-- Highest Scoring Group -->
@@ -86,7 +86,7 @@ import { Team } from '../../core/models/team.interface';
             <span class="text-white font-bold text-sm">{{ cleanSheets() }}</span>
           </div>
           <div class="bg-slate-800/80 border border-slate-700/50 rounded-full px-4 py-2 flex items-center gap-2">
-            <span class="text-slate-400 text-xs font-medium">Draws</span>
+            <span class="text-slate-400 text-xs font-medium">Group Draws</span>
             <span class="text-white font-bold text-sm">{{ draws() }}</span>
           </div>
         </div>
@@ -199,7 +199,12 @@ export class StatsComponent {
   });
 
   cleanSheets = computed(() => {
-    return this.allScoredMatches().filter(m => m.homeScore === 0 || m.awayScore === 0).length;
+    let count = 0;
+    for (const m of this.allScoredMatches()) {
+      if (m.homeScore === 0) count++;
+      if (m.awayScore === 0) count++;
+    }
+    return count;
   });
 
   draws = computed(() => {
