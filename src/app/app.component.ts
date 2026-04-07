@@ -1,10 +1,11 @@
-import { Component, ChangeDetectionStrategy, computed, inject, signal, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, signal, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentService } from './core/services/tournament.service';
 import { GroupTableComponent } from './features/group-stage/group-table/group-table.component';
 import { MatchListComponent } from './features/group-stage/match-list/match-list.component';
 import { ThirdPlaceTableComponent } from './features/group-stage/third-place-table/third-place-table.component';
 import { BracketComponent } from './features/knockout-stage/bracket/bracket.component';
+import { ShareService } from './core/services/share.service';
 
 @Component({
   selector: 'app-root',
@@ -157,8 +158,9 @@ import { BracketComponent } from './features/knockout-stage/bracket/bracket.comp
     .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(56, 189, 248, 0.4); }
   `]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   private tournamentService = inject(TournamentService);
+  private shareService = inject(ShareService);
   matchListOpen = signal(false);
   
   matches = this.tournamentService.matches;
@@ -170,6 +172,23 @@ export class AppComponent {
   groupProgress = this.tournamentService.groupProgress;
   canUndo = this.tournamentService.canUndo;
   canRedo = this.tournamentService.canRedo;
+
+  async ngOnInit() {
+    const hash = window.location.hash;
+    if (!hash.startsWith('#s=')) return;
+
+    const payload = hash.slice(3);
+    const decoded = await this.shareService.decode(payload);
+
+    // Strip hash regardless of outcome
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+
+    if (!decoded) return;
+
+    if (confirm('Someone shared their World Cup predictions with you. Load them? This will replace your current predictions.')) {
+      this.tournamentService.importState(decoded);
+    }
+  }
 
   groupKeys = computed(() => {
     return Array.from(this.standings().keys()).sort();
