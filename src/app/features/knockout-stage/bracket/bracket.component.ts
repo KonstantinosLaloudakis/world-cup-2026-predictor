@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, Input, inject, ViewChild, ElementRef, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { toPng } from 'html-to-image';
 import confetti from 'canvas-confetti';
 import { Match } from '../../../core/models/match.interface';
@@ -10,7 +11,7 @@ import { TournamentService } from '../../../core/services/tournament.service';
   selector: 'app-bracket',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div #bracketContent class="bg-slate-900/40 backdrop-blur-3xl border border-slate-700/50 rounded-2xl sm:rounded-3xl p-3 sm:p-6 shadow-2xl relative overflow-hidden">
       <!-- Glows -->
@@ -285,59 +286,87 @@ import { TournamentService } from '../../../core/services/tournament.service';
 
     <!-- Reusable Match Card Template -->
     <ng-template #matchCard let-match="match">
-      <div class="transition-colors rounded-xl p-1 flex flex-col relative z-10"
+      <div class="transition-colors rounded-xl flex flex-col relative z-10"
            [ngClass]="{
              'bg-slate-800/80 border border-slate-700 shadow-lg': match.homeTeamId || match.awayTeamId,
              'bg-slate-800/30 border border-dashed border-slate-700/40 opacity-50': !match.homeTeamId && !match.awayTeamId
            }">
 
-        <!-- Home Team -->
-        <div class="flex justify-between items-center p-2.5 sm:p-2 rounded cursor-pointer transition-all border border-transparent active:scale-[0.98]"
-             (click)="selectWinner(match, match.homeTeamId)"
+        <!-- Home Team Row -->
+        <div class="flex items-center p-2.5 sm:p-2 rounded-t-xl transition-all"
              [ngClass]="{
-               'bg-indigo-900/60 border-indigo-500/50': isWinner(match, match.homeTeamId),
-               'opacity-30 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId),
-               'hover:bg-slate-700/80 hover:border-slate-500/50': match.homeTeamId && !hasWinner(match)
+               'bg-indigo-900/60': isWinner(match, match.homeTeamId),
+               'opacity-30 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId)
              }">
-          <div class="flex items-center gap-2 truncate pr-2 flex-1 min-w-0 relative z-10">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
             <img *ngIf="getTeam(match.homeTeamId)?.flagUrl" [src]="getTeam(match.homeTeamId)?.flagUrl" alt="Flag" class="w-4 h-3 object-cover rounded-[1px] shadow-sm shrink-0">
             <div *ngIf="match.homeTeamId && !getTeam(match.homeTeamId)?.flagUrl" class="w-4 h-3 bg-slate-700/50 rounded-[1px] shadow-sm shrink-0"></div>
-            <span class="font-bold text-slate-200 truncate group-hover:text-white text-[13px] sm:text-sm" [ngClass]="{'text-slate-500': !match.homeTeamId}">
+            <span class="font-bold text-slate-200 truncate text-[13px] sm:text-sm" [ngClass]="{'text-slate-500': !match.homeTeamId}">
               {{ getTeam(match.homeTeamId)?.name || match.homeTeamId || 'TBD' }}
             </span>
           </div>
-          <div class="w-6 h-6 sm:w-5 sm:h-5 rounded shrink-0 flex items-center justify-center transition-colors border border-slate-700 bg-slate-900"
-               [ngClass]="{'!bg-indigo-500 !border-indigo-400': isWinner(match, match.homeTeamId)}">
-            <svg *ngIf="isWinner(match, match.homeTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-3 sm:w-3 text-white shadow-sm" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-          </div>
+          <input *ngIf="match.homeTeamId && match.awayTeamId"
+                 type="number" min="0" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.homeScore"
+                 (ngModelChange)="onKnockoutScoreChange(match.id, 'regular', $event, match.awayScore)"
+                 class="w-9 h-8 sm:w-8 sm:h-7 bg-slate-900/80 border border-slate-600/50 text-center font-black text-sm text-indigo-400 focus:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded appearance-none shrink-0"
+                 placeholder="-" />
         </div>
 
         <!-- Divider -->
-        <div class="absolute left-2 right-2 top-1/2 -mt-[0.5px] h-px bg-slate-700/50 pointer-events-none z-0"></div>
+        <div class="h-px w-full bg-slate-700/50"></div>
 
-        <!-- Away Team -->
-        <div class="flex justify-between items-center p-2.5 sm:p-2 rounded cursor-pointer transition-all border border-transparent active:scale-[0.98]"
-             (click)="selectWinner(match, match.awayTeamId)"
+        <!-- Away Team Row -->
+        <div class="flex items-center p-2.5 sm:p-2 rounded-b-xl transition-all"
              [ngClass]="{
-               'bg-indigo-900/60 border-indigo-500/50': isWinner(match, match.awayTeamId),
-               'opacity-30 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId),
-               'hover:bg-slate-700/80 hover:border-slate-500/50': match.awayTeamId && !hasWinner(match)
+               'bg-indigo-900/60': isWinner(match, match.awayTeamId),
+               'opacity-30 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId)
              }">
-          <div class="flex items-center gap-2 truncate pr-2 flex-1 min-w-0 relative z-10">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
             <img *ngIf="getTeam(match.awayTeamId)?.flagUrl" [src]="getTeam(match.awayTeamId)?.flagUrl" alt="Flag" class="w-4 h-3 object-cover rounded-[1px] shadow-sm shrink-0">
             <div *ngIf="match.awayTeamId && !getTeam(match.awayTeamId)?.flagUrl" class="w-4 h-3 bg-slate-700/50 rounded-[1px] shadow-sm shrink-0"></div>
-            <span class="font-bold text-slate-200 truncate group-hover:text-white text-[13px] sm:text-sm" [ngClass]="{'text-slate-500': !match.awayTeamId}">
+            <span class="font-bold text-slate-200 truncate text-[13px] sm:text-sm" [ngClass]="{'text-slate-500': !match.awayTeamId}">
               {{ getTeam(match.awayTeamId)?.name || match.awayTeamId || 'TBD' }}
             </span>
           </div>
-          <div class="w-6 h-6 sm:w-5 sm:h-5 rounded shrink-0 flex items-center justify-center transition-colors border border-slate-700 bg-slate-900"
-               [ngClass]="{'!bg-indigo-500 !border-indigo-400': isWinner(match, match.awayTeamId)}">
-             <svg *ngIf="isWinner(match, match.awayTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-3 sm:w-3 text-white shadow-sm" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-          </div>
+          <input *ngIf="match.homeTeamId && match.awayTeamId"
+                 type="number" min="0" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.awayScore"
+                 (ngModelChange)="onKnockoutScoreChange(match.id, 'regular', match.homeScore, $event)"
+                 class="w-9 h-8 sm:w-8 sm:h-7 bg-slate-900/80 border border-slate-600/50 text-center font-black text-sm text-indigo-400 focus:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 rounded appearance-none shrink-0"
+                 placeholder="-" />
+        </div>
+
+        <!-- Extra Time Row (appears when regular time is a draw) -->
+        <div *ngIf="isRegularTimeDraw(match)" class="border-t border-dashed border-amber-500/30 px-2.5 sm:px-2 py-1.5 bg-amber-500/5 flex items-center gap-2 justify-center">
+          <span class="text-[10px] font-bold tracking-widest text-amber-400/80 uppercase">AET</span>
+          <input type="number" [attr.min]="match.homeScore" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.extraTimeHomeScore"
+                 (ngModelChange)="onKnockoutScoreChange(match.id, 'extraTime', $event, match.extraTimeAwayScore)"
+                 class="w-9 h-7 sm:w-8 sm:h-6 bg-slate-900/80 border border-amber-500/30 text-center font-black text-xs text-amber-400 focus:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded appearance-none"
+                 placeholder="-" />
+          <span class="text-amber-500/50 font-black text-xs">:</span>
+          <input type="number" [attr.min]="match.awayScore" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.extraTimeAwayScore"
+                 (ngModelChange)="onKnockoutScoreChange(match.id, 'extraTime', match.extraTimeHomeScore, $event)"
+                 class="w-9 h-7 sm:w-8 sm:h-6 bg-slate-900/80 border border-amber-500/30 text-center font-black text-xs text-amber-400 focus:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded appearance-none"
+                 placeholder="-" />
+        </div>
+
+        <!-- Penalty Row (appears when extra time is also a draw) -->
+        <div *ngIf="isExtraTimeDraw(match)" class="border-t border-dashed border-rose-500/30 px-2.5 sm:px-2 py-1.5 bg-rose-500/5 flex items-center gap-2 justify-center rounded-b-xl">
+          <span class="text-[10px] font-bold tracking-widest text-rose-400/80 uppercase">PEN</span>
+          <input type="number" min="0" max="20" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.penaltyHomeScore"
+                 (ngModelChange)="onKnockoutScoreChange(match.id, 'penalty', $event, match.penaltyAwayScore)"
+                 class="w-9 h-7 sm:w-8 sm:h-6 bg-slate-900/80 border border-rose-500/30 text-center font-black text-xs text-rose-400 focus:text-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500/50 rounded appearance-none"
+                 placeholder="-" />
+          <span class="text-rose-500/50 font-black text-xs">:</span>
+          <input type="number" min="0" max="20" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.penaltyAwayScore"
+                 (ngModelChange)="onKnockoutScoreChange(match.id, 'penalty', match.penaltyHomeScore, $event)"
+                 class="w-9 h-7 sm:w-8 sm:h-6 bg-slate-900/80 border border-rose-500/30 text-center font-black text-xs text-rose-400 focus:text-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500/50 rounded appearance-none"
+                 placeholder="-" />
         </div>
 
       </div>
@@ -395,6 +424,15 @@ import { TournamentService } from '../../../core/services/tournament.service';
     }
     .bracket-connector.out-active .arm-out {
       border-color: rgba(129, 140, 248, 0.7);
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
     }
   `]
 })
@@ -479,11 +517,31 @@ export class BracketComponent {
     this.bracketContent?.nativeElement?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  isRegularTimeDraw(match: Match): boolean {
+    return match.homeScore !== null && match.awayScore !== null
+      && match.homeScore === match.awayScore
+      && match.homeTeamId !== null && match.awayTeamId !== null;
+  }
+
+  isExtraTimeDraw(match: Match): boolean {
+    return this.isRegularTimeDraw(match)
+      && match.extraTimeHomeScore !== null && match.extraTimeAwayScore !== null
+      && match.extraTimeHomeScore === match.extraTimeAwayScore;
+  }
+
+  onKnockoutScoreChange(
+    matchId: number,
+    field: 'regular' | 'extraTime' | 'penalty',
+    homeScore: number | null | string,
+    awayScore: number | null | string
+  ) {
+    const h = (homeScore === '' || homeScore === null || homeScore === undefined) ? null : Number(homeScore);
+    const a = (awayScore === '' || awayScore === null || awayScore === undefined) ? null : Number(awayScore);
+    this.tournamentService.updateKnockoutScore(matchId, field, h, a);
+  }
+
   selectWinner(match: Match, teamId: string | null) {
-    // Winners are now derived from scores via computed signal; no manual selection needed.
-    if (match.id === 104 && teamId && this.isWinner(match, teamId)) {
-      this.triggerConfetti();
-    }
+    // Will be replaced in Task 5
   }
 
   triggerConfetti() {
