@@ -202,4 +202,30 @@ describe('TournamentService', () => {
       expect(r16After?.awayScore).toBeNull();
     });
   });
+
+  describe('importState', () => {
+    it('should import matches and allow undo back to previous state', () => {
+      // Set a known score first
+      const matchA = service.matches().find(m => m.groupId === 'A' && m.stage === 'group');
+      if (!matchA) return;
+      service.updateMatchScore(matchA.id, 3, 0);
+
+      const previousMatches = service.matches();
+      expect(previousMatches.find(m => m.id === matchA.id)?.homeScore).toBe(3);
+
+      // Import new state with different scores
+      const newMatches = service.matches().map(m =>
+        m.id === matchA.id ? { ...m, homeScore: 0, awayScore: 5 } : m
+      );
+      service.importState(newMatches);
+
+      expect(service.matches().find(m => m.id === matchA.id)?.homeScore).toBe(0);
+      expect(service.matches().find(m => m.id === matchA.id)?.awayScore).toBe(5);
+
+      // Undo should restore the previous state
+      service.undo();
+      expect(service.matches().find(m => m.id === matchA.id)?.homeScore).toBe(3);
+      expect(service.matches().find(m => m.id === matchA.id)?.awayScore).toBe(0);
+    });
+  });
 });

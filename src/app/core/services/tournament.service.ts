@@ -56,6 +56,11 @@ export class TournamentService {
     this.redoStackSize.set(this.redoStack.length);
   }
 
+  public importState(matches: Match[]) {
+    this.pushUndo();
+    this.matchesSignal.set(matches);
+  }
+
   public matches = this.matchesSignal.asReadonly();
   public teams = this.teamsSignal.asReadonly();
   public hoveredTeam = this.activeHoverSignal.asReadonly();
