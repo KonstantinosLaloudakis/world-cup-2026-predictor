@@ -52,7 +52,14 @@ export class TournamentService {
 
   public resetTournament() {
     localStorage.removeItem(this.STORAGE_KEY);
-    this.matchesSignal.set(JSON.parse(JSON.stringify(data.matches)));
+    const resetMatches = (JSON.parse(JSON.stringify(data.matches)) as Match[]).map(m => ({
+      ...m,
+      extraTimeHomeScore: m.extraTimeHomeScore ?? null,
+      extraTimeAwayScore: m.extraTimeAwayScore ?? null,
+      penaltyHomeScore: m.penaltyHomeScore ?? null,
+      penaltyAwayScore: m.penaltyAwayScore ?? null,
+    }));
+    this.matchesSignal.set(resetMatches);
     this.activeHoverSignal.set(null);
   }
 
@@ -217,7 +224,13 @@ export class TournamentService {
     ];
 
     // Deep clone matches to prevent mutating raw signal
-    const knockoutBracket = this.matchesSignal().map(m => ({...m}));
+    const knockoutBracket = this.matchesSignal().map(m => ({
+      ...m,
+      extraTimeHomeScore: m.extraTimeHomeScore ?? null,
+      extraTimeAwayScore: m.extraTimeAwayScore ?? null,
+      penaltyHomeScore: m.penaltyHomeScore ?? null,
+      penaltyAwayScore: m.penaltyAwayScore ?? null,
+    }));
 
     // 1. Assign R32 teams
     for (const [matchId, home, away] of r32Pairings) {
@@ -315,7 +328,13 @@ export class TournamentService {
       matches.map(m => {
         if (m.id !== matchId) return m;
 
-        const updated = { ...m };
+        const updated = {
+          ...m,
+          extraTimeHomeScore: m.extraTimeHomeScore ?? null,
+          extraTimeAwayScore: m.extraTimeAwayScore ?? null,
+          penaltyHomeScore: m.penaltyHomeScore ?? null,
+          penaltyAwayScore: m.penaltyAwayScore ?? null,
+        };
 
         if (field === 'regular') {
           updated.homeScore = homeScore;
