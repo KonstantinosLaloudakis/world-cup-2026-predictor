@@ -14,6 +14,48 @@ export class TournamentService {
   private activeHoverSignal = signal<string | null>(null);
   private readonly STORAGE_KEY = 'world_cup_2026_state';
 
+  // Undo/redo history
+  private readonly MAX_HISTORY = 50;
+  private undoStack: Match[][] = [];
+  private redoStack: Match[][] = [];
+  private undoStackSize = signal(0);
+  private redoStackSize = signal(0);
+  private skipUndo = false;
+
+  public canUndo = computed(() => this.undoStackSize() > 0);
+  public canRedo = computed(() => this.redoStackSize() > 0);
+
+  private pushUndo() {
+    if (this.skipUndo) return;
+    this.undoStack.push(JSON.parse(JSON.stringify(this.matchesSignal())));
+    if (this.undoStack.length > this.MAX_HISTORY) this.undoStack.shift();
+    this.redoStack = [];
+    this.undoStackSize.set(this.undoStack.length);
+    this.redoStackSize.set(0);
+  }
+
+  public undo() {
+    if (this.undoStack.length === 0) return;
+    this.redoStack.push(JSON.parse(JSON.stringify(this.matchesSignal())));
+    const prev = this.undoStack.pop()!;
+    this.skipUndo = true;
+    this.matchesSignal.set(prev);
+    this.skipUndo = false;
+    this.undoStackSize.set(this.undoStack.length);
+    this.redoStackSize.set(this.redoStack.length);
+  }
+
+  public redo() {
+    if (this.redoStack.length === 0) return;
+    this.undoStack.push(JSON.parse(JSON.stringify(this.matchesSignal())));
+    const next = this.redoStack.pop()!;
+    this.skipUndo = true;
+    this.matchesSignal.set(next);
+    this.skipUndo = false;
+    this.undoStackSize.set(this.undoStack.length);
+    this.redoStackSize.set(this.redoStack.length);
+  }
+
   public matches = this.matchesSignal.asReadonly();
   public teams = this.teamsSignal.asReadonly();
   public hoveredTeam = this.activeHoverSignal.asReadonly();
@@ -51,6 +93,7 @@ export class TournamentService {
   }
 
   public resetTournament() {
+    this.pushUndo();
     localStorage.removeItem(this.STORAGE_KEY);
     const resetMatches = (JSON.parse(JSON.stringify(data.matches)) as Match[]).map(m => ({
       ...m,
@@ -73,6 +116,7 @@ export class TournamentService {
   }
 
   public simulateGroupStage() {
+    this.pushUndo();
     this.matchesSignal.update(matches => {
       return matches.map(match => {
         if (match.stage !== 'group') return match;
@@ -105,6 +149,8 @@ export class TournamentService {
   }
 
   public simulateKnockoutStage() {
+    this.pushUndo();
+    this.skipUndo = true;
     // Clear all existing knockout scores first
     this.matchesSignal.update(matches =>
       matches.map(m => {
@@ -171,6 +217,7 @@ export class TournamentService {
         }
       }
     }
+    this.skipUndo = false;
   }
 
   public groupProgress = computed(() => {
@@ -384,6 +431,7 @@ export class TournamentService {
   });
 
   public updateMatchScore(matchId: number, homeScore: number | null, awayScore: number | null) {
+    this.pushUndo();
     this.matchesSignal.update(matches =>
       matches.map(m => m.id === matchId ? { ...m, homeScore, awayScore } : m)
     );
@@ -395,6 +443,7 @@ export class TournamentService {
     homeScore: number | null,
     awayScore: number | null
   ) {
+    this.pushUndo();
     // Snapshot team assignments before the score update
     const snapshotBefore = new Map<number, string>();
     for (const m of this.knockoutMatches()) {
@@ -503,12 +552,14 @@ export class TournamentService {
   }
 
   public clearGroupScores(groupId: string) {
-    this.matchesSignal.update(matches => 
+    this.pushUndo();
+    this.matchesSignal.update(matches =>
       matches.map(m => m.groupId === groupId ? { ...m, homeScore: null, awayScore: null } : m)
     );
   }
 
   public randomizeGroupScores(groupId: string) {
+    this.pushUndo();
     this.matchesSignal.update(matches => 
       matches.map(m => {
         if (m.groupId === groupId) {

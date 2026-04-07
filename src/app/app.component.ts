@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, inject, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, inject, signal, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TournamentService } from './core/services/tournament.service';
 import { GroupTableComponent } from './features/group-stage/group-table/group-table.component';
@@ -38,8 +38,24 @@ import { BracketComponent } from './features/knockout-stage/bracket/bracket.comp
           <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
              <button (click)="simulateGroupStage()" class="px-6 py-2.5 rounded-full border border-indigo-500/50 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 font-bold tracking-widest transition-all uppercase text-xs shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_30px_rgba(99,102,241,0.3)] flex items-center gap-2">
                <span>Simulate Group Stage</span>
-               <span class="text-lg leading-none">✨</span>
+               <span class="text-lg leading-none">&#10024;</span>
              </button>
+             <div class="flex items-center gap-1.5">
+               <button (click)="undo()" [disabled]="!canUndo()" title="Undo (Ctrl+Z)"
+                       class="w-10 h-10 sm:w-9 sm:h-9 rounded-full border flex items-center justify-center transition-all"
+                       [ngClass]="{'border-slate-600 bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-white': canUndo(), 'border-slate-800 bg-slate-900/50 text-slate-700 cursor-not-allowed': !canUndo()}">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h10a5 5 0 015 5v0a5 5 0 01-5 5H3m0-10l4-4m-4 4l4 4" />
+                 </svg>
+               </button>
+               <button (click)="redo()" [disabled]="!canRedo()" title="Redo (Ctrl+Y)"
+                       class="w-10 h-10 sm:w-9 sm:h-9 rounded-full border flex items-center justify-center transition-all"
+                       [ngClass]="{'border-slate-600 bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-white': canRedo(), 'border-slate-800 bg-slate-900/50 text-slate-700 cursor-not-allowed': !canRedo()}">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 10H11a5 5 0 00-5 5v0a5 5 0 005 5h10m0-10l-4-4m4 4l-4 4" />
+                 </svg>
+               </button>
+             </div>
              <button (click)="resetTournament()" class="px-6 py-2.5 rounded-full border border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold tracking-widest transition-all uppercase text-xs shadow-[0_0_15px_rgba(243,24,96,0.1)] hover:shadow-[0_0_20px_rgba(243,24,96,0.2)]">
                Reset All
              </button>
@@ -152,6 +168,8 @@ export class AppComponent {
   teams = this.tournamentService.teams;
   teamMap = this.tournamentService.teamMap;
   groupProgress = this.tournamentService.groupProgress;
+  canUndo = this.tournamentService.canUndo;
+  canRedo = this.tournamentService.canRedo;
 
   groupKeys = computed(() => {
     return Array.from(this.standings().keys()).sort();
@@ -179,6 +197,25 @@ export class AppComponent {
   simulateGroupStage() {
     if (confirm('This will overwrite all current group stage predictions with a realistic simulation. Proceed?')) {
       this.tournamentService.simulateGroupStage();
+    }
+  }
+
+  undo() {
+    this.tournamentService.undo();
+  }
+
+  redo() {
+    this.tournamentService.redo();
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardShortcut(event: KeyboardEvent) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+      event.preventDefault();
+      this.undo();
+    } else if ((event.ctrlKey || event.metaKey) && (event.key === 'y' || (event.key === 'z' && event.shiftKey))) {
+      event.preventDefault();
+      this.redo();
     }
   }
 }
