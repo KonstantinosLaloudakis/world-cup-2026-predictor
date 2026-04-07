@@ -6,12 +6,13 @@ import { MatchListComponent } from './features/group-stage/match-list/match-list
 import { ThirdPlaceTableComponent } from './features/group-stage/third-place-table/third-place-table.component';
 import { BracketComponent } from './features/knockout-stage/bracket/bracket.component';
 import { ShareService } from './core/services/share.service';
+import { StatsComponent } from './features/stats/stats.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, GroupTableComponent, MatchListComponent, ThirdPlaceTableComponent, BracketComponent],
+  imports: [CommonModule, GroupTableComponent, MatchListComponent, ThirdPlaceTableComponent, BracketComponent, StatsComponent],
   template: `
     <div class="min-h-screen pb-20 relative overflow-hidden">
       <!-- Ambient Background Glows -->
@@ -61,6 +62,18 @@ import { ShareService } from './core/services/share.service';
                Reset All
              </button>
           </div>
+          <div class="mt-4 flex justify-center gap-1">
+            <button (click)="viewMode.set('predictions')"
+                    class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
+                    [ngClass]="{'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50': viewMode() === 'predictions', 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:text-slate-300': viewMode() !== 'predictions'}">
+              Predictions
+            </button>
+            <button (click)="viewMode.set('stats')"
+                    class="px-4 py-1.5 rounded-full text-xs font-bold transition-all"
+                    [ngClass]="{'bg-indigo-500/30 text-indigo-300 border border-indigo-500/50': viewMode() === 'stats', 'bg-slate-800/50 text-slate-500 border border-slate-700/50 hover:text-slate-300': viewMode() !== 'stats'}">
+              Stats
+            </button>
+          </div>
         </header>
 
         <!-- Main Content Area -->
@@ -95,46 +108,52 @@ import { ShareService } from './core/services/share.service';
 
           <!-- Group Tables Grid & Third Place Table -->
           <div class="flex-1 pb-8 min-w-0">
-            <div class="grid grid-cols-1 xl:grid-cols-2 min-[1700px]:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
-              <ng-container *ngFor="let group of groupKeys()">
-                <app-group-table
-                  [groupName]="group"
-                  [standings]="standings().get(group) || []"
-                  [teamMap]="teamMap()"
-                  class="h-full">
-                </app-group-table>
-              </ng-container>
-            </div>
+            <!-- Stats View -->
+            <app-stats *ngIf="viewMode() === 'stats'" (switchToPredictions)="viewMode.set('predictions')"></app-stats>
 
-            <!-- Third Place Ranking Table -->
-            <div class="w-full mb-12">
-              <app-third-place-table
-                [thirds]="thirdPlaceStandings()"
-                [teamMap]="teamMap()">
-              </app-third-place-table>
-            </div>
+            <!-- Predictions View -->
+            <ng-container *ngIf="viewMode() === 'predictions'">
+              <div class="grid grid-cols-1 xl:grid-cols-2 min-[1700px]:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
+                <ng-container *ngFor="let group of groupKeys()">
+                  <app-group-table
+                    [groupName]="group"
+                    [standings]="standings().get(group) || []"
+                    [teamMap]="teamMap()"
+                    class="h-full">
+                  </app-group-table>
+                </ng-container>
+              </div>
 
-            <!-- Section Divider -->
-            <div class="w-full flex items-center gap-4 mb-12">
-              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-              <span class="text-xs font-bold tracking-[0.2em] uppercase text-slate-500">Knockout Phase</span>
-              <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
-            </div>
+              <!-- Third Place Ranking Table -->
+              <div class="w-full mb-12">
+                <app-third-place-table
+                  [thirds]="thirdPlaceStandings()"
+                  [teamMap]="teamMap()">
+                </app-third-place-table>
+              </div>
 
-            <!-- Knockout Bracket -->
-            <div id="knockout-bracket-section" class="w-full">
-              <app-bracket
-                [matches]="knockoutMatches()"
-                [teamMap]="teamMap()">
-              </app-bracket>
-            </div>
+              <!-- Section Divider -->
+              <div class="w-full flex items-center gap-4 mb-12">
+                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+                <span class="text-xs font-bold tracking-[0.2em] uppercase text-slate-500">Knockout Phase</span>
+                <div class="flex-1 h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent"></div>
+              </div>
+
+              <!-- Knockout Bracket -->
+              <div id="knockout-bracket-section" class="w-full">
+                <app-bracket
+                  [matches]="knockoutMatches()"
+                  [teamMap]="teamMap()">
+                </app-bracket>
+              </div>
+            </ng-container>
           </div>
         </div>
 
       </div>
     
       <!-- Floating Navigation -->
-      <div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:bottom-10 lg:right-10 z-50 flex flex-col gap-2 sm:gap-3 shadow-2xl">
+      <div *ngIf="viewMode() === 'predictions'" class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:bottom-10 lg:right-10 z-50 flex flex-col gap-2 sm:gap-3 shadow-2xl">
         <button (click)="scrollTo('top')" title="Back to Top"
                 class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-slate-800/90 backdrop-blur border border-slate-700/50 flex items-center justify-center text-slate-400 hover:text-cyan-400 hover:border-cyan-500/50 hover:bg-slate-800 transition-all shadow-lg active:scale-95">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,7 +181,8 @@ export class AppComponent implements OnInit {
   private tournamentService = inject(TournamentService);
   private shareService = inject(ShareService);
   matchListOpen = signal(false);
-  
+  viewMode = signal<'predictions' | 'stats'>('predictions');
+
   matches = this.tournamentService.matches;
   knockoutMatches = this.tournamentService.knockoutMatches;
   standings = this.tournamentService.groupStandings;
