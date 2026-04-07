@@ -171,5 +171,35 @@ describe('TournamentService', () => {
       const winners = service.knockoutWinners();
       expect(winners.get(r32Match.id)).toBe(r32Match.homeTeamId!);
     });
+
+    it('should clear downstream match scores when upstream winner changes', () => {
+      service.simulateGroupStage();
+
+      const knockoutMatches = service.knockoutMatches();
+      const r32Match = knockoutMatches.find(m => m.stage === 'round_32' && m.homeTeamId && m.awayTeamId);
+      if (!r32Match) return;
+
+      // Enter score for R32 match — home wins
+      service.updateKnockoutScore(r32Match.id, 'regular', 3, 0);
+
+      // Find the R16 match that this R32 winner feeds into
+      const updatedKnockout = service.knockoutMatches();
+      const r16Match = updatedKnockout.find(m =>
+        m.stage === 'round_16' && (m.homeTeamId === r32Match.homeTeamId || m.awayTeamId === r32Match.homeTeamId)
+      );
+      if (!r16Match) return;
+
+      // Enter score for the R16 match
+      service.updateKnockoutScore(r16Match.id, 'regular', 2, 0);
+
+      // Now change the R32 result — away wins instead
+      service.updateKnockoutScore(r32Match.id, 'regular', 0, 3);
+
+      // The R16 match scores should be cleared because the matchup changed
+      const finalKnockout = service.knockoutMatches();
+      const r16After = finalKnockout.find(m => m.id === r16Match.id);
+      expect(r16After?.homeScore).toBeNull();
+      expect(r16After?.awayScore).toBeNull();
+    });
   });
 });

@@ -305,6 +305,12 @@ export class TournamentService {
     homeScore: number | null,
     awayScore: number | null
   ) {
+    // Snapshot team assignments before the score update
+    const snapshotBefore = new Map<number, string>();
+    for (const m of this.knockoutMatches()) {
+      snapshotBefore.set(m.id, `${m.homeTeamId ?? ''}-${m.awayTeamId ?? ''}`);
+    }
+
     this.matchesSignal.update(matches =>
       matches.map(m => {
         if (m.id !== matchId) return m;
@@ -337,6 +343,38 @@ export class TournamentService {
         return updated;
       })
     );
+
+    // Check for downstream matchup changes and clear stale scores
+    const currentKnockout = this.knockoutMatches();
+    const matchIdsToClean: number[] = [];
+
+    for (const m of currentKnockout) {
+      const prevKey = snapshotBefore.get(m.id);
+      const currentKey = `${m.homeTeamId ?? ''}-${m.awayTeamId ?? ''}`;
+
+      if (prevKey !== undefined && prevKey !== currentKey) {
+        matchIdsToClean.push(m.id);
+      }
+    }
+
+    if (matchIdsToClean.length > 0) {
+      this.matchesSignal.update(matches =>
+        matches.map(m => {
+          if (matchIdsToClean.includes(m.id)) {
+            return {
+              ...m,
+              homeScore: null,
+              awayScore: null,
+              extraTimeHomeScore: null,
+              extraTimeAwayScore: null,
+              penaltyHomeScore: null,
+              penaltyAwayScore: null,
+            };
+          }
+          return m;
+        })
+      );
+    }
   }
 
   public setHoveredTeam(teamId: string | null) {
