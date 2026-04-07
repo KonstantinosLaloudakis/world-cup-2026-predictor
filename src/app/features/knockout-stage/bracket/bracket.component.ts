@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Input, inject, ViewChild, ElementRef, computed, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, DoCheck, Input, inject, ViewChild, ElementRef, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { toPng } from 'html-to-image';
@@ -81,35 +81,12 @@ import { TournamentService } from '../../../core/services/tournament.service';
           </ng-container>
           <!-- Final -->
           <ng-container *ngIf="mobileRound() === 4">
-            <ng-container *ngIf="finalMatch() as match">
-              <div class="bg-gradient-to-br from-amber-500/20 to-amber-900/20 border border-amber-500/50 rounded-2xl p-4 shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col gap-2 relative">
-                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-                <div class="flex justify-between items-center z-10 p-3 rounded-lg cursor-pointer transition-all border border-transparent active:scale-[0.98]"
-                     (click)="selectWinner(match, match.homeTeamId)"
-                     [ngClass]="{ 'bg-amber-500/20 border-amber-500 shadow-inner scale-[1.02]': isWinner(match, match.homeTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId), 'hover:bg-amber-500/10': match.homeTeamId && !hasWinner(match) }">
-                  <div class="flex items-center gap-2">
-                    <img *ngIf="getTeam(match.homeTeamId)?.flagUrl" [src]="getTeam(match.homeTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
-                    <span class="font-black text-amber-300 text-base" [ngClass]="{'opacity-50': !match.homeTeamId}">{{ getTeam(match.homeTeamId)?.name || 'TBD' }}</span>
-                  </div>
-                  <div class="w-7 h-7 rounded-full flex items-center justify-center bg-amber-950/50 border border-amber-500/30" [ngClass]="{'!bg-amber-500': isWinner(match, match.homeTeamId)}">
-                    <svg *ngIf="isWinner(match, match.homeTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                  </div>
-                </div>
-                <div class="h-px w-full bg-gradient-to-r from-transparent via-amber-500/50 to-transparent my-0.5 z-10"></div>
-                <div class="flex justify-between items-center z-10 p-3 rounded-lg cursor-pointer transition-all border border-transparent active:scale-[0.98]"
-                     (click)="selectWinner(match, match.awayTeamId)"
-                     [ngClass]="{ 'bg-amber-500/20 border-amber-500 shadow-inner scale-[1.02]': isWinner(match, match.awayTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId), 'hover:bg-amber-500/10': match.awayTeamId && !hasWinner(match) }">
-                  <div class="flex items-center gap-2">
-                    <img *ngIf="getTeam(match.awayTeamId)?.flagUrl" [src]="getTeam(match.awayTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
-                    <span class="font-black text-amber-300 text-base" [ngClass]="{'opacity-50': !match.awayTeamId}">{{ getTeam(match.awayTeamId)?.name || 'TBD' }}</span>
-                  </div>
-                  <div class="w-7 h-7 rounded-full flex items-center justify-center bg-amber-950/50 border border-amber-500/30" [ngClass]="{'!bg-amber-500': isWinner(match, match.awayTeamId)}">
-                    <svg *ngIf="isWinner(match, match.awayTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                  </div>
-                </div>
-              </div>
-            </ng-container>
-            <!-- Third Place -->
+            <div class="mb-4">
+              <h3 class="text-center text-sm font-bold tracking-widest text-amber-500 uppercase mb-3 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">Final</h3>
+              <ng-container *ngIf="finalMatch() as match">
+                <ng-container *ngTemplateOutlet="finalCard; context: { match: match }"></ng-container>
+              </ng-container>
+            </div>
             <div class="mt-4">
               <h3 class="text-center text-xs font-bold tracking-widest text-slate-500 uppercase mb-3">Third Place</h3>
               <ng-container *ngIf="thirdPlaceMatch() as match">
@@ -222,52 +199,7 @@ import { TournamentService } from '../../../core/services/tournament.service';
             <div class="flex flex-col">
               <h3 class="text-center text-sm font-bold tracking-widest text-amber-500 uppercase mb-4 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">Final</h3>
               <ng-container *ngIf="finalMatch() as match">
-                <!-- Golden Final Match -->
-                <div class="bg-gradient-to-br from-amber-500/20 to-amber-900/20 border border-amber-500/50 rounded-2xl p-4 shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col gap-2 relative">
-                  <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-
-                  <div class="flex justify-between items-center z-10 p-3 sm:p-2 rounded-lg cursor-pointer transition-all border border-transparent active:scale-[0.98]"
-                       (click)="selectWinner(match, match.homeTeamId)"
-                       [ngClass]="{
-                         'bg-amber-500/20 border-amber-500 shadow-inner scale-[1.02]': isWinner(match, match.homeTeamId),
-                         'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId),
-                         'hover:bg-amber-500/10 hover:border-amber-500/30': match.homeTeamId && !hasWinner(match)
-                       }">
-                    <div class="flex items-center gap-2">
-                      <img *ngIf="getTeam(match.homeTeamId)?.flagUrl" [src]="getTeam(match.homeTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
-                      <div *ngIf="match.homeTeamId && !getTeam(match.homeTeamId)?.flagUrl" class="w-6 h-4 bg-slate-700/50 rounded-[2px] shadow-sm shrink-0"></div>
-                      <span class="font-black text-amber-300 text-base sm:text-lg" [ngClass]="{'opacity-50': !match.homeTeamId}">{{ getTeam(match.homeTeamId)?.name || match.homeTeamId || 'TBD' }}</span>
-                    </div>
-                    <div class="w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all bg-amber-950/50 border border-amber-500/30"
-                         [ngClass]="{'!bg-amber-500': isWinner(match, match.homeTeamId)}">
-                      <svg *ngIf="isWinner(match, match.homeTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div class="h-px w-full bg-gradient-to-r from-transparent via-amber-500/50 to-transparent my-0.5 z-10"></div>
-
-                  <div class="flex justify-between items-center z-10 p-3 sm:p-2 rounded-lg cursor-pointer transition-all border border-transparent active:scale-[0.98]"
-                       (click)="selectWinner(match, match.awayTeamId)"
-                       [ngClass]="{
-                         'bg-amber-500/20 border-amber-500 shadow-inner scale-[1.02]': isWinner(match, match.awayTeamId),
-                         'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId),
-                         'hover:bg-amber-500/10 hover:border-amber-500/30': match.awayTeamId && !hasWinner(match)
-                       }">
-                    <div class="flex items-center gap-2">
-                      <img *ngIf="getTeam(match.awayTeamId)?.flagUrl" [src]="getTeam(match.awayTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
-                      <div *ngIf="match.awayTeamId && !getTeam(match.awayTeamId)?.flagUrl" class="w-6 h-4 bg-slate-700/50 rounded-[2px] shadow-sm shrink-0"></div>
-                      <span class="font-black text-amber-300 text-base sm:text-lg" [ngClass]="{'opacity-50': !match.awayTeamId}">{{ getTeam(match.awayTeamId)?.name || match.awayTeamId || 'TBD' }}</span>
-                    </div>
-                    <div class="w-7 h-7 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all bg-amber-950/50 border border-amber-500/30"
-                         [ngClass]="{'!bg-amber-500': isWinner(match, match.awayTeamId)}">
-                      <svg *ngIf="isWinner(match, match.awayTeamId)" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
+                <ng-container *ngTemplateOutlet="finalCard; context: { match: match }"></ng-container>
               </ng-container>
             </div>
 
@@ -371,6 +303,65 @@ import { TournamentService } from '../../../core/services/tournament.service';
 
       </div>
     </ng-template>
+
+    <!-- Final Match Card Template (amber/golden styling) -->
+    <ng-template #finalCard let-match="match">
+      <div class="bg-gradient-to-br from-amber-500/20 to-amber-900/20 border border-amber-500/50 rounded-2xl shadow-[0_0_30px_rgba(245,158,11,0.15)] flex flex-col relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+
+        <!-- Home Team -->
+        <div class="flex items-center z-10 p-3 sm:p-2 rounded-t-2xl transition-all"
+             [ngClass]="{ 'bg-amber-500/20': isWinner(match, match.homeTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.homeTeamId) }">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <img *ngIf="getTeam(match.homeTeamId)?.flagUrl" [src]="getTeam(match.homeTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
+            <div *ngIf="match.homeTeamId && !getTeam(match.homeTeamId)?.flagUrl" class="w-6 h-4 bg-slate-700/50 rounded-[2px] shadow-sm shrink-0"></div>
+            <span class="font-black text-amber-300 text-base sm:text-lg" [ngClass]="{'opacity-50': !match.homeTeamId}">{{ getTeam(match.homeTeamId)?.name || match.homeTeamId || 'TBD' }}</span>
+          </div>
+          <input *ngIf="match.homeTeamId && match.awayTeamId" type="number" min="0" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.homeScore" (ngModelChange)="onKnockoutScoreChange(match.id, 'regular', $event, match.awayScore)"
+                 class="w-10 h-9 sm:w-9 sm:h-8 bg-amber-950/50 border border-amber-500/30 text-center font-black text-base text-amber-400 focus:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded appearance-none shrink-0 z-10" placeholder="-" />
+        </div>
+
+        <div class="h-px w-full bg-gradient-to-r from-transparent via-amber-500/50 to-transparent z-10"></div>
+
+        <!-- Away Team -->
+        <div class="flex items-center z-10 p-3 sm:p-2 transition-all"
+             [ngClass]="{ 'bg-amber-500/20': isWinner(match, match.awayTeamId), 'opacity-40 grayscale': hasWinner(match) && !isWinner(match, match.awayTeamId) }">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <img *ngIf="getTeam(match.awayTeamId)?.flagUrl" [src]="getTeam(match.awayTeamId)?.flagUrl" alt="Flag" class="w-6 h-4 object-cover rounded-[2px] shadow-sm">
+            <div *ngIf="match.awayTeamId && !getTeam(match.awayTeamId)?.flagUrl" class="w-6 h-4 bg-slate-700/50 rounded-[2px] shadow-sm shrink-0"></div>
+            <span class="font-black text-amber-300 text-base sm:text-lg" [ngClass]="{'opacity-50': !match.awayTeamId}">{{ getTeam(match.awayTeamId)?.name || match.awayTeamId || 'TBD' }}</span>
+          </div>
+          <input *ngIf="match.homeTeamId && match.awayTeamId" type="number" min="0" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.awayScore" (ngModelChange)="onKnockoutScoreChange(match.id, 'regular', match.homeScore, $event)"
+                 class="w-10 h-9 sm:w-9 sm:h-8 bg-amber-950/50 border border-amber-500/30 text-center font-black text-base text-amber-400 focus:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded appearance-none shrink-0 z-10" placeholder="-" />
+        </div>
+
+        <!-- AET -->
+        <div *ngIf="isRegularTimeDraw(match)" class="border-t border-dashed border-amber-500/30 px-3 py-1.5 bg-amber-500/5 flex items-center gap-2 justify-center z-10">
+          <span class="text-[10px] font-bold tracking-widest text-amber-400/80 uppercase">AET</span>
+          <input type="number" [attr.min]="match.homeScore" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.extraTimeHomeScore" (ngModelChange)="onKnockoutScoreChange(match.id, 'extraTime', $event, match.extraTimeAwayScore)"
+                 class="w-9 h-7 bg-amber-950/50 border border-amber-500/30 text-center font-black text-xs text-amber-400 focus:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded appearance-none" placeholder="-" />
+          <span class="text-amber-500/50 font-black text-xs">:</span>
+          <input type="number" [attr.min]="match.awayScore" max="15" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.extraTimeAwayScore" (ngModelChange)="onKnockoutScoreChange(match.id, 'extraTime', match.extraTimeHomeScore, $event)"
+                 class="w-9 h-7 bg-amber-950/50 border border-amber-500/30 text-center font-black text-xs text-amber-400 focus:text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded appearance-none" placeholder="-" />
+        </div>
+
+        <!-- PEN -->
+        <div *ngIf="isExtraTimeDraw(match)" class="border-t border-dashed border-rose-500/30 px-3 py-1.5 bg-rose-500/5 flex items-center gap-2 justify-center rounded-b-2xl z-10">
+          <span class="text-[10px] font-bold tracking-widest text-rose-400/80 uppercase">PEN</span>
+          <input type="number" min="0" max="20" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.penaltyHomeScore" (ngModelChange)="onKnockoutScoreChange(match.id, 'penalty', $event, match.penaltyAwayScore)"
+                 class="w-9 h-7 bg-amber-950/50 border border-rose-500/30 text-center font-black text-xs text-rose-400 focus:text-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500/50 rounded appearance-none" placeholder="-" />
+          <span class="text-rose-500/50 font-black text-xs">:</span>
+          <input type="number" min="0" max="20" inputmode="numeric" pattern="[0-9]*"
+                 [ngModel]="match.penaltyAwayScore" (ngModelChange)="onKnockoutScoreChange(match.id, 'penalty', match.penaltyHomeScore, $event)"
+                 class="w-9 h-7 bg-amber-950/50 border border-rose-500/30 text-center font-black text-xs text-rose-400 focus:text-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-500/50 rounded appearance-none" placeholder="-" />
+        </div>
+      </div>
+    </ng-template>
   `,
   styles: [`
     .custom-scrollbar { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
@@ -436,7 +427,7 @@ import { TournamentService } from '../../../core/services/tournament.service';
     }
   `]
 })
-export class BracketComponent {
+export class BracketComponent implements DoCheck {
   private tournamentService = inject(TournamentService);
 
   @Input() set matches(val: Match[]) {
@@ -540,8 +531,20 @@ export class BracketComponent {
     this.tournamentService.updateKnockoutScore(matchId, field, h, a);
   }
 
-  selectWinner(match: Match, teamId: string | null) {
-    // Will be replaced in Task 5
+  private finalWinner = computed(() => {
+    const match = this.finalMatch();
+    if (!match) return null;
+    return this.winners().get(match.id) ?? null;
+  });
+
+  private previousFinalWinner: string | null = null;
+
+  ngDoCheck() {
+    const current = this.finalWinner();
+    if (current && current !== this.previousFinalWinner) {
+      this.triggerConfetti();
+    }
+    this.previousFinalWinner = current;
   }
 
   triggerConfetti() {
