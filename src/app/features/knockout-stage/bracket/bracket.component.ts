@@ -6,6 +6,7 @@ import confetti from 'canvas-confetti';
 import { Match } from '../../../core/models/match.interface';
 import { Team } from '../../../core/models/team.interface';
 import { TournamentService } from '../../../core/services/tournament.service';
+import { ShareService } from '../../../core/services/share.service';
 
 @Component({
   selector: 'app-bracket',
@@ -37,6 +38,16 @@ import { TournamentService } from '../../../core/services/tournament.service';
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
           <span class="hidden sm:inline text-xs tracking-widest uppercase">Download</span>
+        </button>
+        <button (click)="shareLink()" class="flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 rounded-xl bg-slate-800/90 backdrop-blur hover:bg-slate-700 active:bg-slate-600 text-slate-300 font-bold tracking-wide transition-all border border-slate-600 shadow-lg hover:text-white"
+                [ngClass]="{'!bg-emerald-500/20 !border-emerald-500/50 !text-emerald-300': shareCopied()}">
+          <svg *ngIf="!shareCopied()" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          <svg *ngIf="shareCopied()" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span class="hidden sm:inline text-xs tracking-widest uppercase">{{ shareCopied() ? 'Copied!' : 'Share' }}</span>
         </button>
       </div>
 
@@ -449,6 +460,8 @@ import { TournamentService } from '../../../core/services/tournament.service';
 })
 export class BracketComponent implements DoCheck {
   private tournamentService = inject(TournamentService);
+  private shareService = inject(ShareService);
+  shareCopied = signal(false);
 
   @Input() set matches(val: Match[]) {
     this.matchesSignal.set(val);
@@ -576,6 +589,22 @@ export class BracketComponent implements DoCheck {
   simulateKnockout() {
     if (confirm('This will overwrite all current knockout predictions with a realistic simulation. Proceed?')) {
       this.tournamentService.simulateKnockoutStage();
+    }
+  }
+
+  async shareLink() {
+    const matches = this.tournamentService.matches();
+    const encoded = await this.shareService.encode(matches);
+    if (!encoded) return;
+
+    const url = window.location.origin + window.location.pathname + '#s=' + encoded;
+
+    try {
+      await navigator.clipboard.writeText(url);
+      this.shareCopied.set(true);
+      setTimeout(() => this.shareCopied.set(false), 2000);
+    } catch {
+      prompt('Copy this link to share your predictions:', url);
     }
   }
 
