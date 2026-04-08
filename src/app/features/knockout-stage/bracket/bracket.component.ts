@@ -682,9 +682,15 @@ export class BracketComponent implements DoCheck {
   });
 
   private previousFinalWinner: string | null = null;
+  private confettiInitialized = false;
 
   ngDoCheck() {
     const current = this.finalWinner();
+    if (!this.confettiInitialized) {
+      this.confettiInitialized = true;
+      this.previousFinalWinner = current;
+      return;
+    }
     if (current && current !== this.previousFinalWinner) {
       this.triggerConfetti();
     }
