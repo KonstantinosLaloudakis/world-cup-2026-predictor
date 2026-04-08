@@ -378,7 +378,12 @@ export class StatsComponent {
       return { ...base, exitRound: `${label} (TBD)`, exitRoundOrder: order - 1 };
     });
 
-    return journeys.sort((a, b) => a.exitRoundOrder - b.exitRoundOrder || b.points - a.points);
+    return journeys.sort((a, b) =>
+      a.exitRoundOrder - b.exitRoundOrder
+      || b.points - a.points
+      || (b.goalsFor - b.goalsAgainst) - (a.goalsFor - a.goalsAgainst)
+      || b.goalsFor - a.goalsFor
+    );
   });
 
   trackByTeamId(index: number, journey: { teamId: string }): string {
